@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#F5F6F8">
+<title>Refer a client | Article6 Studio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap">
+<style>
+:root{font-family:Geist,system-ui,sans-serif;color:#101215;background:#F5F6F8;font-size:16px}
+*{box-sizing:border-box}body{margin:0}header,main,footer{max-width:720px;margin:auto;padding:22px}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E2E4E9}
+.brand{font-weight:600;letter-spacing:-.03em}a{color:inherit;text-decoration:none}a:hover{text-decoration:underline}
+small,.muted{color:#626874}main{padding-top:58px;padding-bottom:80px}
+.eyebrow{font-size:12px;font-weight:600;color:#4555df;text-transform:uppercase;letter-spacing:.13em}
+h1{font-size:clamp(38px,7vw,58px);line-height:1.04;letter-spacing:-.05em;font-weight:500;margin:14px 0 15px}
+.lede{font-size:17px;color:#626874;line-height:1.5;margin:0 0 34px}
+form{background:white;border:1px solid #E2E4E9;border-radius:22px;padding:clamp(20px,5vw,38px);display:grid;gap:22px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{display:grid;gap:7px}label{font-size:14px;font-weight:500}
+input,select,textarea{width:100%;font:inherit;color:#101215;border:1px solid #C9CED7;border-radius:10px;padding:13px 14px;min-height:50px;background:white}
+textarea{resize:vertical;min-height:92px}input:focus,select:focus,textarea:focus{outline:2px solid #2B3FFF;outline-offset:1px}
+.hint{font-size:12px;color:#626874;margin:0}.heading{font-size:12px;font-weight:600;color:#626874;letter-spacing:.08em;text-transform:uppercase;margin:0}
+button{font:inherit;font-weight:600;background:#101215;color:white;border:0;padding:15px 20px;min-height:52px;border-radius:11px;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+#status{font-size:14px;line-height:1.5;min-height:21px}#status.error{color:#B42318}#status.success{color:#166534}
+footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
+@media(max-width:570px){.grid{grid-template-columns:1fr}main{padding-top:36px}.lede{margin-bottom:24px}}
+@media(prefers-color-scheme:dark){:root{background:#0D0F12;color:#F2F3F5}header,footer{border-color:#23272E}form{background:#14171B;border-color:#30343B}input,select,textarea{background:#191D23;color:#F2F3F5;border-color:#525966}.muted,.lede,.hint,small,.heading{color:#A6ACB6}button{background:#F2F3F5;color:#101215}#status.success{color:#86EFAC}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Article6 Studio</a><small>Partner referrals</small></header>
+<main>
+<p class="eyebrow">New opportunity</p>
+<h1>Refer a client.</h1>
+<p class="lede">A quick introduction is enough. Share what you know; we'll handle the follow-up.</p>
+<form id="referral-form">
+<p class="heading">Who are we speaking to?</p>
+<div class="grid">
+<div class="field"><label for="company">Business name *</label><input id="company" name="company" maxlength="120" autocomplete="organization" required placeholder="Company or business"></div>
+<div class="field"><label for="name">Contact name *</label><input id="name" name="name" maxlength="120" autocomplete="name" required placeholder="Decision-maker's name"></div>
+<div class="field"><label for="email">Email</label><input id="email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="name@company.com"></div>
+<div class="field"><label for="whatsapp">WhatsApp / phone</label><input id="whatsapp" name="whatsapp" type="tel" maxlength="40" autocomplete="tel" placeholder="+971 ..."></div>
+</div>
+<p class="hint">Provide at least one contact method, email or WhatsApp.</p>
+<div class="field"><label for="website">Business website (optional)</label><input id="website" name="website" inputmode="url" maxlength="400" placeholder="example.com"></div>
+<div class="field"><label for="service">What do they need? *</label><select id="service" name="service" required>
+<option value="">Select a service</option>
+<option value="WEBSITE_DESIGN">A new website</option>
+<option value="WEBSITE_REDESIGN">Redesign an existing website</option>
+<option value="WEBSITE_DEVELOPMENT">Website development / features</option>
+<option value="SEO_GEO">SEO / AI search visibility</option>
+<option value="OTHER">Something else / not sure</option>
+</select></div>
+<div class="field"><label for="interest">What have they agreed to? *</label><select id="interest" name="interest" required>
+<option value="">Select their interest</option>
+<option value="UNCONFIRMED">Not yet confirmed</option>
+<option value="INTERESTED">Interested in discussing</option>
+<option value="QUOTE_REQUESTED">Requested a quote</option>
+<option value="MEETING_AGREED">Agreed to a meeting</option>
+</select></div>
+<div class="field"><label for="budget">Budget discussed? (optional)</label><input id="budget" name="budget" maxlength="120" placeholder="e.g. $1,000 or not discussed"></div>
+<div class="field"><label for="notes">Anything we should know? (optional)</label><textarea id="notes" name="notes" maxlength="1500" rows="3" placeholder="What did they say? Best time to follow up?"></textarea></div>
+<button id="submit" type="submit">Submit referral</button>
+<div id="status" role="status" aria-live="polite"></div>
+</form>
+</main>
+<footer>Article6 Studio · Private referral submissions only. Do not share this form without permission.</footer>
+<script>
+(function(){
+const form=document.getElementById('referral-form');
+const status=document.getElementById('status');
+const button=document.getElementById('submit');
+const fragment=new URLSearchParams(location.hash.slice(1));
+const key=fragment.get('key')||'';
+if(location.hash)history.replaceState(null,'',location.pathname);
+form.addEventListener('submit',async function(e){
+ e.preventDefault();status.textContent='';status.className='';
+ const data=Object.fromEntries(new FormData(form).entries());
+ if(!data.email&&!data.whatsapp){status.className='error';status.textContent='Enter an email address or WhatsApp number.';return;}
+ if(!key){status.className='error';status.textContent='Your referral link is missing its access key. Ask Article6 for a new link.';return;}
+ if(data.website){
+  try{const u=new URL(/^https?:\/\//i.test(data.website)?data.website:'https://'+data.website);if(!['http:','https:'].includes(u.protocol)||!u.hostname.includes('.'))throw Error();data.website=u.href;}
+  catch{status.className='error';status.textContent='Please enter a valid business website.';return;}
+ }
+ button.disabled=true;button.textContent='Saving referral...';
+ try{
+  const response=await fetch('/api/referral',{method:'POST',headers:{'content-type':'application/json','x-referral-key':key},body:JSON.stringify(data)});
+  const result=await response.json();
+  if(!response.ok)throw Error(result.error||'We could not save the referral.');
+  status.className='success';status.textContent='Referral saved successfully. Thank you.';
+  form.reset();
+ }catch(err){status.className='error';status.textContent=err.message||'Submission failed. Please check with Article6.';}
+ finally{button.disabled=false;button.textContent='Submit referral';}
+});
+})();
+</script>
+</body>
+</html>

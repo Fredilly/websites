@@ -10,6 +10,40 @@ export default {
     if (url.pathname === "/api/health" && request.method === "GET") {
       return json({ status: "ok", service: "article6-websites", runtime: "cloudflare-workers" });
     }
+    if (url.pathname === "/api/referral" && request.method === "POST") {
+      const expected = env.REFERRAL_ACCESS_KEY;
+      const supplied = request.headers.get("x-referral-key") || "";
+      if (!expected || !supplied || supplied !== expected) return json({ error: "Invalid referral access. Check your private link." }, 401);
+      if (!env.CRM_INGEST_URL || !env.CRM_INGEST_TOKEN) return json({ error: "Referral submissions are temporarily unavailable." }, 503);
+      const origin = request.headers.get("origin");
+      if (origin && origin !== url.origin) return json({ error: "Forbidden." }, 403);
+      if (!(request.headers.get("content-type") || "").toLowerCase().startsWith("application/json")) return json({ error: "Expected JSON." }, 415);
+      const raw = await request.text();
+      if (raw.length > 6000) return json({ error: "Submission too large." }, 413);
+      let body;
+      try { body = JSON.parse(raw); } catch { return json({ error: "Invalid JSON." }, 400); }
+      if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "Invalid submission." }, 400);
+      const field = (key, max) => typeof body[key] === "string" ? body[key].trim().slice(0, max) : "";
+      const payload = {
+        company: field("company", 120), name: field("name", 120),
+        email: field("email", 254), whatsapp: field("whatsapp", 40),
+        website: field("website", 400), service: field("service", 80),
+        interest: field("interest", 80), budget: field("budget", 120),
+        notes: field("notes", 1500)
+      };
+      if (!payload.company || !payload.name || (!payload.email && !payload.whatsapp)) return json({ error: "Company, name, and a contact method are required." }, 400);
+      try {
+        const response = await fetch(env.CRM_INGEST_URL, {
+          method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + env.CRM_INGEST_TOKEN },
+          body: JSON.stringify(payload), signal: AbortSignal.timeout(10000)
+        });
+        if (response.status === 409) return json({ error: "This lead may already exist. Please contact Article6 before resubmitting." }, 409);
+        if (!response.ok) return json({ error: "We could not save this lead. Please retry later." }, 502);
+        return json({ ok: true }, 201);
+      } catch {
+        return json({ error: "We could not verify that this lead was saved. Please check with Article6 before retrying." }, 502);
+      }
+    }
     if (url.pathname === "/api/contact" && request.method === "POST") {
       // Deliberately fails closed until the existing CRM integration is configured.
       // Never acknowledge a lead without persisting or delivering it.
