@@ -1,23 +1,28 @@
 # Article6 Websites
 
-Static website-development landing page for `websites.article6.org`.
+Cloudflare **Worker** with a dynamic API and bundled website assets.
 
-## Cloudflare Pages setup
+## Cloudflare Workers Builds
 
-- Git repository: `Fredilly/websites`
-- Production branch: `main`
-- Framework preset: `None`
-- Build command: `exit 0`
-- Build output directory: `public`
-- Root directory: leave blank (repository root)
-- Environment variables: none required
+Connect `Fredilly/websites` to Workers Builds, branch `main`. On the **Set up your application** screen:
 
-Use **Workers & Pages → Create application → Pages → Connect to Git**, select this repository, and enter the settings above. Cloudflare automatically deploys each subsequent push to `main`.
+- Project name: `websites`
+- Build command: leave **blank**
+- Deploy command (if shown later): `npx wrangler deploy`
+- Root directory: repository root
 
-After the `*.pages.dev` site is live, select **Custom domains → Set up a domain** and enter `websites.article6.org`. Let Cloudflare handle DNS where possible. Do not manually point DNS before attaching the domain.
+The repo has `wrangler.jsonc` with a Worker entrypoint at `src/index.js` and the website in `public/`. The Cloudflare Git integration automatically deploys pushes to `main`.
 
-## Notes
+After the first deployment, add the custom domain `websites.article6.org` to the Worker in Settings > Domains & Routes.
 
-- No Node.js, npm dependencies, or build framework are required.
-- Enquiries currently use `mailto:contact@article6.org`; a CRM-backed form can be added once its endpoint is explicitly verified.
-- Do not copy another Article6 project's Worker routes or Cloudflare build configurations into this project.
+## API
+
+- `GET /api/health` returns the dynamic Worker health status.
+- `POST /api/contact` validates incoming enquiry data and is **disabled until the existing CRM endpoint is verified**. Set runtime secrets `CRM_INGEST_URL` and `CRM_INGEST_TOKEN` only after confirming the actual integration contract. No fake success responses.
+- The public homepage currently uses `mailto:contact@article6.org` so enquiries have a working fallback.
+
+## Local
+
+`npm install && npm run dev`
+
+Do not override existing Article6 DNS, CRM routes or Cloudflare Workers.
