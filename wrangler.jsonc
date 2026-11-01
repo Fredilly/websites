@@ -1,0 +1,15 @@
+{
+  "name": "websites",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-31",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*"
+    ]
+  },
+  "observability": {
+    "enabled": true
+  }
+}
