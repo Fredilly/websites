@@ -34,14 +34,16 @@ The mobile-friendly intake page is `/refer/`. It is deliberately not linked from
 
 To activate it, configure these **Cloudflare Worker secrets** (Settings > Variables and Secrets):
 
-- `REFERRAL_ACCESS_KEY`: a long random secret for Claudia's link.
+- `REFERRAL_USERNAME`: Claudia's dedicated username (Worker secret).
+- `REFERRAL_PASSWORD`: a strong unique password (Worker secret).
+- `REFERRAL_SESSION_SECRET`: a long independently generated signing key (Worker secret).
 - `CRM_INGEST_URL`: `https://www.article6.org/api/partner/web-referral` (confirm that this is routed to the Article6 Next.js API in production).
 - `CRM_INGEST_TOKEN`: a separate long random secret that matches `WEB_REFERRAL_INGEST_TOKEN` on the Article6 backend.
 
 The Article6 backend must be deployed with `WEB_REFERRAL_INGEST_TOKEN` set before accepting referrals.
 
-Share the link `https://websites.article6.org/refer/#key=<REFERRAL_ACCESS_KEY>` privately with Claudia. The key is parsed in the browser and sent in an HTTP request header, not a URL query parameter. Treat the link as a credential and rotate it if shared.
+Share `https://websites.article6.org/refer/` with Claudia and provide her credentials privately. Her 8-hour signed, HttpOnly, Secure, SameSite=Strict session permits only referral submission. No partner read, update, or delete CRM APIs exist. Rotate the signing secret to revoke active sessions. Configure Cloudflare WAF rate-limiting for POST /api/referral/login before granting access.
 
-**Verification**: Submit a unique test referral, confirm it appears under Web Services at `/internal/sales`, verify contact and referral notes, then verify that submissions without a key and with a bad key fail. Do not tell Claudia the form is live until this has passed.
+**Verification**: Submit a unique test referral, confirm it appears under Web Services at `/internal/sales`, verify contact and referral notes, then verify that submissions without a session and incorrect login credentials fail. Do not tell Claudia the form is live until this has passed.
 
 **Limitations**: CRM writes use existing store helpers and can require manual reconciliation after partial downstream failures or duplicate contacts. The referral page is partner-only; the public homepage contact remains unchanged.
