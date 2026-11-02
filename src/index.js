@@ -1,21 +1,13 @@
-const encoder = new TextEncoder();
-const toHex = bytes => [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, "0")).join("");
-async function digest(value) { return toHex(await crypto.subtle.digest("SHA-256", encoder.encode(value))); }
-async function signature(message, secret) {
-  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  return toHex(await crypto.subtle.sign("HMAC", key, encoder.encode(message)));
-}
-async function verifySession(request, env) {
-  if (!env.REFERRAL_SESSION_SECRET) return false;
-  const token = (request.headers.get("cookie") || "").split(";").map(v => v.trim()).find(v => v.startsWith("referral_session="))?.split("=")[1];
-  if (!token) return false;
-  const parts = token.split(".");
-  if (parts.length !== 2 || !/^\d+$/.test(parts[0]) || Number(parts[0]) < Date.now() || Number(parts[0]) > Date.now() + 9 * 3600000) return false;
-  return parts[1] === await signature(parts[0], env.REFERRAL_SESSION_SECRET);
-}
-function sameOrigin(request) {
-  const origin = request.headers.get("origin");
-  return origin === new URL(request.url).origin;
+const sessionCookie = req => (req.headers.get("cookie") || "").split(";").map(s=>s.trim()).find(s=>s.startsWith("referral_session="))?.slice(17) || "";
+const sameOrigin = req => req.headers.get("origin") === new URL(req.url).origin;
+const cleared = "referral_session=; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=0";
+async function referralAuth(env, body) {
+  if(!env.CRM_INGEST_URL || !env.CRM_INGEST_TOKEN) throw Error("Not configured");
+  const target=new URL(env.CRM_INGEST_URL);
+  if(target.protocol!=="https:" || target.pathname!=="/api/partner/web-referral") throw Error("Invalid CRM URL");
+  target.pathname="/api/partner/referral-auth";
+  const r=await fetch(target.toString(),{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+env.CRM_INGEST_TOKEN},body:JSON.stringify(body),signal:AbortSignal.timeout(9000)});
+  return {status:r.status,body:await r.json()};
 }
 const json = (data, status = 200, extra = {}) => new Response(JSON.stringify(data), {
   status,
