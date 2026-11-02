@@ -28,22 +28,24 @@ After the first deployment, add the custom domain `websites.article6.org` to the
 Do not override existing Article6 DNS, CRM routes or Cloudflare Workers.
 
 
-## Private partner referral intake
+## Referral partner accounts (multiple agents)
 
-The mobile-friendly intake page is `/refer/`. It is deliberately not linked from the public homepage and carries `noindex`.
+The private form is at `https://websites.article6.org/refer/`, using independent agent accounts managed by the Article6 CRM.
 
-To activate it, configure these **Cloudflare Worker secrets** (Settings > Variables and Secrets):
+In Cloudflare Worker `websites` → Settings → Variables and Secrets, set only:
 
-- `REFERRAL_USERNAME`: Claudia's dedicated username (Worker secret).
-- `REFERRAL_PASSWORD`: a strong unique password (Worker secret).
-- `REFERRAL_SESSION_SECRET`: a long independently generated signing key (Worker secret).
-- `CRM_INGEST_URL`: `https://www.article6.org/api/partner/web-referral` (confirm that this is routed to the Article6 Next.js API in production).
-- `CRM_INGEST_TOKEN`: a separate long random secret that matches `WEB_REFERRAL_INGEST_TOKEN` on the Article6 backend.
+- `CRM_INGEST_URL`: `https://www.article6.org/api/partner/web-referral` (verify production routing to Next.js; the Worker requires HTTPS and this path).
+- `CRM_INGEST_TOKEN`: a strong random secret, equal to the Article6 backend `WEB_REFERRAL_INGEST_TOKEN`.
 
-The Article6 backend must be deployed with `WEB_REFERRAL_INGEST_TOKEN` set before accepting referrals.
+Do **not** set `REFERRAL_USERNAME`, `REFERRAL_PASSWORD`, or `REFERRAL_SESSION_SECRET`. Those legacy single-agent secrets are no longer read after this change; remove them once the new login has been tested.
 
-Share `https://websites.article6.org/refer/` with Claudia and provide her credentials privately. Her 8-hour signed, HttpOnly, Secure, SameSite=Strict session permits only referral submission. No partner read, update, or delete CRM APIs exist. Rotate the signing secret to revoke active sessions. Configure Cloudflare WAF rate-limiting for POST /api/referral/login before granting access.
+On the Article6 backend, apply `migrations/021_sales_referral_agents.sql` and configure `WEB_REFERRAL_INGEST_TOKEN` as a secret. Then visit `/internal/sales/referral-partners` using your existing administrator login.
 
-**Verification**: Submit a unique test referral, confirm it appears under Web Services at `/internal/sales`, verify contact and referral notes, then verify that submissions without a session and incorrect login credentials fail. Do not tell Claudia the form is live until this has passed.
+- Create `claudia` and any future partners; the page shows a random temporary password **only once**.
+- Partners may change their own passwords from `/refer/`.
+- Disabling a partner or resetting their password invalidates active sessions.
+- Every submitted lead is attributed to its authenticated partner in the existing Web Services CRM; partners cannot list/edit/delete CRM data.
+- Add a Cloudflare WAF rule rate-limiting `POST /api/referral/login` before launch.
+- Do not provide credentials until verified end to end with a real test referral and negative tests.
 
-**Limitations**: CRM writes use existing store helpers and can require manual reconciliation after partial downstream failures or duplicate contacts. The referral page is partner-only; the public homepage contact remains unchanged.
+The existing public homepage's mailto contact fallback is unchanged.
