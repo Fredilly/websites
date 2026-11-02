@@ -35,12 +35,29 @@ export default {
         return json({ok:true,agent:result.body.agent},200,{"set-cookie":"referral_session="+token+"; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=28800"});
       }catch{return json({error:"Authentication unavailable"},503)}
     }
-    if (url.pathname === "/api/referral/logout" && request.method === "POST") {
-      if (!sameOrigin(request)) return json({ error: "Forbidden." }, 403);
-      return json({ ok: true }, 200, { "set-cookie": "referral_session=; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=0" });
+    if(url.pathname==="/api/referral/logout"&&request.method==="POST"){
+      if(!sameOrigin(request))return json({error:"Forbidden"},403);
+      return json({ok:true},200,{"set-cookie":cleared});
     }
-    if (url.pathname === "/api/referral/session" && request.method === "GET") {
-      return json({ authenticated: await verifySession(request, env) });
+    if(url.pathname==="/api/referral/session"&&request.method==="GET"){
+      const token=sessionCookie(request);
+      if(!token)return json({authenticated:false});
+      try{
+        const r=await referralAuth(env,{action:"session",session:token});
+        return json({authenticated:r.status===200,agent:r.status===200?r.body.agent:undefined},200,r.status===200?{}:{"set-cookie":cleared});
+      }catch{return json({authenticated:false,error:"Authentication service unavailable"},503)}
+    }
+    if(url.pathname==="/api/referral/change-password"&&request.method==="POST"){
+      if(!sameOrigin(request))return json({error:"Forbidden"},403);
+      const token=sessionCookie(request);if(!token)return json({error:"Please log in again"},401);
+      const raw=await request.text();if(raw.length>600)return json({error:"Too large"},413);
+      let b;try{b=JSON.parse(raw)}catch{return json({error:"Invalid JSON"},400)}
+      if(typeof b.currentPassword!=="string"||typeof b.newPassword!=="string")return json({error:"Invalid password"},400);
+      try{
+        const r=await referralAuth(env,{action:"change_password",session:token,currentPassword:b.currentPassword,newPassword:b.newPassword});
+        if(r.status!==200)return json({error:r.body.error||"Unable to change password"},r.status===401?401:400);
+        return json({ok:true},200,{"set-cookie":cleared});
+      }catch{return json({error:"Authentication service unavailable"},503)}
     }
     if (url.pathname === "/api/referral" && request.method === "POST") {
       if (!(await verifySession(request, env))) return json({ error: "Please log in to submit referrals." }, 401);
