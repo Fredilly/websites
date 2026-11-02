@@ -1,21 +1,13 @@
-const encoder = new TextEncoder();
-const toHex = bytes => [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, "0")).join("");
-async function digest(value) { return toHex(await crypto.subtle.digest("SHA-256", encoder.encode(value))); }
-async function signature(message, secret) {
-  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  return toHex(await crypto.subtle.sign("HMAC", key, encoder.encode(message)));
-}
-async function verifySession(request, env) {
-  if (!env.REFERRAL_SESSION_SECRET) return false;
-  const token = (request.headers.get("cookie") || "").split(";").map(v => v.trim()).find(v => v.startsWith("referral_session="))?.split("=")[1];
-  if (!token) return false;
-  const parts = token.split(".");
-  if (parts.length !== 2 || !/^\d+$/.test(parts[0]) || Number(parts[0]) < Date.now() || Number(parts[0]) > Date.now() + 9 * 3600000) return false;
-  return parts[1] === await signature(parts[0], env.REFERRAL_SESSION_SECRET);
-}
-function sameOrigin(request) {
-  const origin = request.headers.get("origin");
-  return origin === new URL(request.url).origin;
+const sessionCookie = req => (req.headers.get("cookie") || "").split(";").map(s=>s.trim()).find(s=>s.startsWith("referral_session="))?.slice(17) || "";
+const sameOrigin = req => req.headers.get("origin") === new URL(req.url).origin;
+const cleared = "referral_session=; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=0";
+async function referralAuth(env, body) {
+  if(!env.CRM_INGEST_URL || !env.CRM_INGEST_TOKEN) throw Error("Not configured");
+  const target=new URL(env.CRM_INGEST_URL);
+  if(target.protocol!=="https:" || target.pathname!=="/api/partner/web-referral") throw Error("Invalid CRM URL");
+  target.pathname="/api/partner/referral-auth";
+  const r=await fetch(target.toString(),{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+env.CRM_INGEST_TOKEN},body:JSON.stringify(body),signal:AbortSignal.timeout(9000)});
+  return {status:r.status,body:await r.json()};
 }
 const json = (data, status = 200, extra = {}) => new Response(JSON.stringify(data), {
   status,
@@ -30,33 +22,46 @@ export default {
       return json({ status: "ok", service: "article6-websites", runtime: "cloudflare-workers" });
     }
     if (url.pathname === "/api/referral/login" && request.method === "POST") {
-      if (!sameOrigin(request)) return json({ error: "Forbidden." }, 403);
-      if (!env.REFERRAL_USERNAME || !env.REFERRAL_PASSWORD || !env.REFERRAL_SESSION_SECRET) {
-        return json({ error: "Partner login is not configured." }, 503);
-      }
-      if (!(request.headers.get("content-type") || "").startsWith("application/json")) return json({ error: "Expected JSON." }, 415);
-      const raw = await request.text();
-      if (raw.length > 1024) return json({ error: "Request too large." }, 413);
-      let body;
-      try { body = JSON.parse(raw); } catch { return json({ error: "Invalid JSON." }, 400); }
-      const username = typeof body?.username === "string" ? body.username : "";
-      const password = typeof body?.password === "string" ? body.password : "";
-      const matchUser = await digest(username) === await digest(env.REFERRAL_USERNAME);
-      const matchPassword = await digest(password) === await digest(env.REFERRAL_PASSWORD);
-      if (!matchUser || !matchPassword) return json({ error: "Incorrect username or password." }, 401);
-      const expires = String(Date.now() + 8 * 3600000);
-      const token = expires + "." + await signature(expires, env.REFERRAL_SESSION_SECRET);
-      return json({ ok: true }, 200, { "set-cookie": "referral_session=" + token + "; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=28800" });
+      if (!sameOrigin(request)) return json({error:"Forbidden"},403);
+      if (!(request.headers.get("content-type")||"").startsWith("application/json")) return json({error:"Expected JSON"},415);
+      const raw=await request.text(); if(raw.length>1024)return json({error:"Too large"},413);
+      let body;try{body=JSON.parse(raw)}catch{return json({error:"Invalid JSON"},400)}
+      if(typeof body.username!=="string"||typeof body.password!=="string"||body.username.length>40||body.password.length>128)return json({error:"Invalid input"},400);
+      try {
+        const result=await referralAuth(env,{action:"login",username:body.username,password:body.password});
+        if(result.status!==200)return json({error:"Incorrect credentials or account unavailable"},result.status===401?401:503);
+        const token=result.body.session;
+        if(typeof token!=="string"||token.length>1024)return json({error:"Invalid upstream session"},502);
+        return json({ok:true,agent:result.body.agent},200,{"set-cookie":"referral_session="+token+"; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=28800"});
+      }catch{return json({error:"Authentication unavailable"},503)}
     }
-    if (url.pathname === "/api/referral/logout" && request.method === "POST") {
-      if (!sameOrigin(request)) return json({ error: "Forbidden." }, 403);
-      return json({ ok: true }, 200, { "set-cookie": "referral_session=; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=0" });
+    if(url.pathname==="/api/referral/logout"&&request.method==="POST"){
+      if(!sameOrigin(request))return json({error:"Forbidden"},403);
+      return json({ok:true},200,{"set-cookie":cleared});
     }
-    if (url.pathname === "/api/referral/session" && request.method === "GET") {
-      return json({ authenticated: await verifySession(request, env) });
+    if(url.pathname==="/api/referral/session"&&request.method==="GET"){
+      const token=sessionCookie(request);
+      if(!token)return json({authenticated:false});
+      try{
+        const r=await referralAuth(env,{action:"session",session:token});
+        return json({authenticated:r.status===200,agent:r.status===200?r.body.agent:undefined},200,r.status===200?{}:{"set-cookie":cleared});
+      }catch{return json({authenticated:false,error:"Authentication service unavailable"},503)}
+    }
+    if(url.pathname==="/api/referral/change-password"&&request.method==="POST"){
+      if(!sameOrigin(request))return json({error:"Forbidden"},403);
+      const token=sessionCookie(request);if(!token)return json({error:"Please log in again"},401);
+      const raw=await request.text();if(raw.length>600)return json({error:"Too large"},413);
+      let b;try{b=JSON.parse(raw)}catch{return json({error:"Invalid JSON"},400)}
+      if(typeof b.currentPassword!=="string"||typeof b.newPassword!=="string")return json({error:"Invalid password"},400);
+      try{
+        const r=await referralAuth(env,{action:"change_password",session:token,currentPassword:b.currentPassword,newPassword:b.newPassword});
+        if(r.status!==200)return json({error:r.body.error||"Unable to change password"},r.status===401?401:400);
+        return json({ok:true},200,{"set-cookie":cleared});
+      }catch{return json({error:"Authentication service unavailable"},503)}
     }
     if (url.pathname === "/api/referral" && request.method === "POST") {
-      if (!(await verifySession(request, env))) return json({ error: "Please log in to submit referrals." }, 401);
+      const agentSession=sessionCookie(request);
+      if (!agentSession) return json({error:"Please log in to submit referrals."},401);
       if (!sameOrigin(request)) return json({ error: "Forbidden." }, 403);
       if (!env.CRM_INGEST_URL || !env.CRM_INGEST_TOKEN) return json({ error: "Referral submissions are temporarily unavailable." }, 503);
       const origin = request.headers.get("origin");
@@ -73,7 +78,7 @@ export default {
         email: field("email", 254), whatsapp: field("whatsapp", 40),
         website: field("website", 400), service: field("service", 80),
         interest: field("interest", 80), budget: field("budget", 120),
-        notes: field("notes", 1500)
+        notes: field("notes", 1500), agentSession
       };
       if (!payload.company || !payload.name || (!payload.email && !payload.whatsapp)) return json({ error: "Company, name, and a contact method are required." }, 400);
       try {
@@ -81,6 +86,7 @@ export default {
           method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + env.CRM_INGEST_TOKEN },
           body: JSON.stringify(payload), signal: AbortSignal.timeout(10000)
         });
+        if (response.status === 401) return json({error:"Please log in to submit referrals."},401,{"set-cookie":cleared});
         if (response.status === 409) return json({ error: "This lead may already exist. Please contact Article6 before resubmitting." }, 409);
         if (!response.ok) return json({ error: "We could not save this lead. Please retry later." }, 502);
         return json({ ok: true }, 201);

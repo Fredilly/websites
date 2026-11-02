@@ -44,7 +44,7 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <div id="login-status" role="status" aria-live="polite"></div>
 </form>
 <form id="referral-form" hidden>
-<p class="heading">Who are we speaking to?</p>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><p class="heading">Who are we speaking to?</p><button id="logout" type="button" style="background:transparent;color:var(--ink);border:1px solid #C9CED7;padding:9px 12px;min-height:38px;font-size:13px">Sign out</button></div>
 <div class="grid">
 <div class="field"><label for="company">Business name *</label><input id="company" name="company" maxlength="120" autocomplete="organization" required placeholder="Company or business"></div>
 <div class="field"><label for="name">Contact name *</label><input id="name" name="name" maxlength="120" autocomplete="name" required placeholder="Decision-maker's name"></div>
@@ -73,13 +73,14 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <button id="submit" type="submit">Submit referral</button>
 <div id="status" role="status" aria-live="polite"></div>
 </form>
+<section id="account" hidden style="margin-top:24px"><details><summary style="cursor:pointer;font-weight:600">Change my password</summary><form id="password-form" style="margin-top:12px"><div class="field"><label for="current-password">Current password</label><input type="password" id="current-password" name="currentPassword" autocomplete="current-password" required></div><div class="field"><label for="new-password">New password (at least 14 characters)</label><input type="password" id="new-password" name="newPassword" autocomplete="new-password" minlength="14" maxlength="128" required></div><button type="submit">Change password</button><p class="hint">For your security, changing your password signs you out of every session.</p><div id="password-status" role="status" aria-live="polite"></div></form></details></section>
 </main>
 <footer>Article6 Studio · Private referral submissions only. Do not share this form without permission.</footer>
 <script>
 (function(){
 const loginForm=document.getElementById('login-form'), loginStatus=document.getElementById('login-status'), referralForm=document.getElementById('referral-form');
 const status=document.getElementById('status'), button=document.getElementById('submit');
-function showForm(){loginForm.hidden=true;referralForm.hidden=false;}
+function showForm(){loginForm.hidden=true;referralForm.hidden=false;document.getElementById("account").hidden=false;}
 fetch('/api/referral/session',{credentials:'same-origin'}).then(r=>r.json()).then(v=>{if(v.authenticated)showForm()}).catch(()=>{});
 loginForm.addEventListener('submit',async function(e){
  e.preventDefault();loginStatus.textContent='';
@@ -110,8 +111,22 @@ referralForm.addEventListener('submit',async function(e){
   referralForm.reset();
  }catch(err){
   status.className='error';status.textContent=err.message||'Submission failed. Please check with Article6.';
-  if(err.message?.includes('log in')){referralForm.hidden=true;loginForm.hidden=false;}
+  if(err.message?.includes('log in')){referralForm.hidden=true;loginForm.hidden=false;document.getElementById("account").hidden=true;}
  }finally{button.disabled=false;button.textContent='Submit referral';}
+});
+document.getElementById('logout').addEventListener('click',async function(){
+ try{await fetch('/api/referral/logout',{method:'POST',credentials:'same-origin'})}finally{location.reload()}
+});
+document.getElementById('password-form').addEventListener('submit',async function(e){
+ e.preventDefault();
+ const output=document.getElementById('password-status');output.textContent='';output.className='';
+ const data=Object.fromEntries(new FormData(e.currentTarget).entries());
+ try{
+  const r=await fetch('/api/referral/change-password',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(data)});
+  const b=await r.json();if(!r.ok)throw Error(b.error||'Could not change password');
+  output.className='success';output.textContent='Password updated. Sign in again with your new password.';
+  document.getElementById('password-form').reset();referralForm.hidden=true;loginForm.hidden=false;document.getElementById('account').hidden=true;
+ }catch(err){output.className='error';output.textContent=err.message||'Password change failed'}
 });
 })();
 </script>
