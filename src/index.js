@@ -1,3 +1,22 @@
+const encoder = new TextEncoder();
+const toHex = bytes => [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, "0")).join("");
+async function digest(value) { return toHex(await crypto.subtle.digest("SHA-256", encoder.encode(value))); }
+async function signature(message, secret) {
+  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return toHex(await crypto.subtle.sign("HMAC", key, encoder.encode(message)));
+}
+async function verifySession(request, env) {
+  if (!env.REFERRAL_SESSION_SECRET) return false;
+  const token = (request.headers.get("cookie") || "").split(";").map(v => v.trim()).find(v => v.startsWith("referral_session="))?.split("=")[1];
+  if (!token) return false;
+  const parts = token.split(".");
+  if (parts.length !== 2 || !/^\d+$/.test(parts[0]) || Number(parts[0]) < Date.now() || Number(parts[0]) > Date.now() + 9 * 3600000) return false;
+  return parts[1] === await signature(parts[0], env.REFERRAL_SESSION_SECRET);
+}
+function sameOrigin(request) {
+  const origin = request.headers.get("origin");
+  return origin === new URL(request.url).origin;
+}
 const json = (data, status = 200, extra = {}) => new Response(JSON.stringify(data), {
   status,
   headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store",
@@ -10,10 +29,35 @@ export default {
     if (url.pathname === "/api/health" && request.method === "GET") {
       return json({ status: "ok", service: "article6-websites", runtime: "cloudflare-workers" });
     }
+    if (url.pathname === "/api/referral/login" && request.method === "POST") {
+      if (!sameOrigin(request)) return json({ error: "Forbidden." }, 403);
+      if (!env.REFERRAL_USERNAME || !env.REFERRAL_PASSWORD || !env.REFERRAL_SESSION_SECRET) {
+        return json({ error: "Partner login is not configured." }, 503);
+      }
+      if (!(request.headers.get("content-type") || "").startsWith("application/json")) return json({ error: "Expected JSON." }, 415);
+      const raw = await request.text();
+      if (raw.length > 1024) return json({ error: "Request too large." }, 413);
+      let body;
+      try { body = JSON.parse(raw); } catch { return json({ error: "Invalid JSON." }, 400); }
+      const username = typeof body?.username === "string" ? body.username : "";
+      const password = typeof body?.password === "string" ? body.password : "";
+      const matchUser = await digest(username) === await digest(env.REFERRAL_USERNAME);
+      const matchPassword = await digest(password) === await digest(env.REFERRAL_PASSWORD);
+      if (!matchUser || !matchPassword) return json({ error: "Incorrect username or password." }, 401);
+      const expires = String(Date.now() + 8 * 3600000);
+      const token = expires + "." + await signature(expires, env.REFERRAL_SESSION_SECRET);
+      return json({ ok: true }, 200, { "set-cookie": "referral_session=" + token + "; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=28800" });
+    }
+    if (url.pathname === "/api/referral/logout" && request.method === "POST") {
+      if (!sameOrigin(request)) return json({ error: "Forbidden." }, 403);
+      return json({ ok: true }, 200, { "set-cookie": "referral_session=; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=0" });
+    }
+    if (url.pathname === "/api/referral/session" && request.method === "GET") {
+      return json({ authenticated: await verifySession(request, env) });
+    }
     if (url.pathname === "/api/referral" && request.method === "POST") {
-      const expected = env.REFERRAL_ACCESS_KEY;
-      const supplied = request.headers.get("x-referral-key") || "";
-      if (!expected || !supplied || supplied !== expected) return json({ error: "Invalid referral access. Check your private link." }, 401);
+      if (!(await verifySession(request, env))) return json({ error: "Please log in to submit referrals." }, 401);
+      if (!sameOrigin(request)) return json({ error: "Forbidden." }, 403);
       if (!env.CRM_INGEST_URL || !env.CRM_INGEST_TOKEN) return json({ error: "Referral submissions are temporarily unavailable." }, 503);
       const origin = request.headers.get("origin");
       if (origin && origin !== url.origin) return json({ error: "Forbidden." }, 403);

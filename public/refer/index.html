@@ -23,7 +23,7 @@ input,select,textarea{width:100%;font:inherit;color:#101215;border:1px solid #C9
 textarea{resize:vertical;min-height:92px}input:focus,select:focus,textarea:focus{outline:2px solid #2B3FFF;outline-offset:1px}
 .hint{font-size:12px;color:#626874;margin:0}.heading{font-size:12px;font-weight:600;color:#626874;letter-spacing:.08em;text-transform:uppercase;margin:0}
 button{font:inherit;font-weight:600;background:#101215;color:white;border:0;padding:15px 20px;min-height:52px;border-radius:11px;cursor:pointer}
-button:disabled{opacity:.6;cursor:wait}
+button:disabled{opacity:.6;cursor:wait}form[hidden]{display:none}
 #status{font-size:14px;line-height:1.5;min-height:21px}#status.error{color:#B42318}#status.success{color:#166534}
 footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 @media(max-width:570px){.grid{grid-template-columns:1fr}main{padding-top:36px}.lede{margin-bottom:24px}}
@@ -36,7 +36,14 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <p class="eyebrow">New opportunity</p>
 <h1>Refer a client.</h1>
 <p class="lede">A quick introduction is enough. Share what you know; we'll handle the follow-up.</p>
-<form id="referral-form">
+<form id="login-form" autocomplete="on">
+<p class="heading">Partner sign in</p>
+<div class="field"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required></div>
+<div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required></div>
+<button type="submit" id="login-button">Sign in</button>
+<div id="login-status" role="status" aria-live="polite"></div>
+</form>
+<form id="referral-form" hidden>
 <p class="heading">Who are we speaking to?</p>
 <div class="grid">
 <div class="field"><label for="company">Business name *</label><input id="company" name="company" maxlength="120" autocomplete="organization" required placeholder="Company or business"></div>
@@ -70,30 +77,41 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <footer>Article6 Studio · Private referral submissions only. Do not share this form without permission.</footer>
 <script>
 (function(){
-const form=document.getElementById('referral-form');
-const status=document.getElementById('status');
-const button=document.getElementById('submit');
-const fragment=new URLSearchParams(location.hash.slice(1));
-const key=fragment.get('key')||'';
-if(location.hash)history.replaceState(null,'',location.pathname);
-form.addEventListener('submit',async function(e){
+const loginForm=document.getElementById('login-form'), loginStatus=document.getElementById('login-status'), referralForm=document.getElementById('referral-form');
+const status=document.getElementById('status'), button=document.getElementById('submit');
+function showForm(){loginForm.hidden=true;referralForm.hidden=false;}
+fetch('/api/referral/session',{credentials:'same-origin'}).then(r=>r.json()).then(v=>{if(v.authenticated)showForm()}).catch(()=>{});
+loginForm.addEventListener('submit',async function(e){
+ e.preventDefault();loginStatus.textContent='';
+ const loginButton=document.getElementById('login-button');loginButton.disabled=true;
+ try{
+  const data=Object.fromEntries(new FormData(loginForm).entries());
+  const response=await fetch('/api/referral/login',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(data)});
+  const result=await response.json();
+  if(!response.ok)throw Error(result.error||'Sign-in failed.');
+  loginForm.reset();showForm();
+ }catch(err){loginStatus.className='error';loginStatus.textContent=err.message||'Unable to sign in.'}
+ finally{loginButton.disabled=false}
+});
+referralForm.addEventListener('submit',async function(e){
  e.preventDefault();status.textContent='';status.className='';
- const data=Object.fromEntries(new FormData(form).entries());
+ const data=Object.fromEntries(new FormData(referralForm).entries());
  if(!data.email&&!data.whatsapp){status.className='error';status.textContent='Enter an email address or WhatsApp number.';return;}
- if(!key){status.className='error';status.textContent='Your referral link is missing its access key. Ask Article6 for a new link.';return;}
  if(data.website){
   try{const u=new URL(/^https?:\/\//i.test(data.website)?data.website:'https://'+data.website);if(!['http:','https:'].includes(u.protocol)||!u.hostname.includes('.'))throw Error();data.website=u.href;}
   catch{status.className='error';status.textContent='Please enter a valid business website.';return;}
  }
  button.disabled=true;button.textContent='Saving referral...';
  try{
-  const response=await fetch('/api/referral',{method:'POST',headers:{'content-type':'application/json','x-referral-key':key},body:JSON.stringify(data)});
+  const response=await fetch('/api/referral',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(data)});
   const result=await response.json();
   if(!response.ok)throw Error(result.error||'We could not save the referral.');
   status.className='success';status.textContent='Referral saved successfully. Thank you.';
-  form.reset();
- }catch(err){status.className='error';status.textContent=err.message||'Submission failed. Please check with Article6.';}
- finally{button.disabled=false;button.textContent='Submit referral';}
+  referralForm.reset();
+ }catch(err){
+  status.className='error';status.textContent=err.message||'Submission failed. Please check with Article6.';
+  if(err.message?.includes('log in')){referralForm.hidden=true;loginForm.hidden=false;}
+ }finally{button.disabled=false;button.textContent='Submit referral';}
 });
 })();
 </script>
