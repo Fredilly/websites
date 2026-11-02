@@ -60,7 +60,8 @@ export default {
       }catch{return json({error:"Authentication service unavailable"},503)}
     }
     if (url.pathname === "/api/referral" && request.method === "POST") {
-      if (!(await verifySession(request, env))) return json({ error: "Please log in to submit referrals." }, 401);
+      const agentSession=sessionCookie(request);
+      if (!agentSession) return json({error:"Please log in to submit referrals."},401);
       if (!sameOrigin(request)) return json({ error: "Forbidden." }, 403);
       if (!env.CRM_INGEST_URL || !env.CRM_INGEST_TOKEN) return json({ error: "Referral submissions are temporarily unavailable." }, 503);
       const origin = request.headers.get("origin");
@@ -77,7 +78,7 @@ export default {
         email: field("email", 254), whatsapp: field("whatsapp", 40),
         website: field("website", 400), service: field("service", 80),
         interest: field("interest", 80), budget: field("budget", 120),
-        notes: field("notes", 1500)
+        notes: field("notes", 1500), agentSession
       };
       if (!payload.company || !payload.name || (!payload.email && !payload.whatsapp)) return json({ error: "Company, name, and a contact method are required." }, 400);
       try {
@@ -85,6 +86,7 @@ export default {
           method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + env.CRM_INGEST_TOKEN },
           body: JSON.stringify(payload), signal: AbortSignal.timeout(10000)
         });
+        if (response.status === 401) return json({error:"Please log in to submit referrals."},401,{"set-cookie":cleared});
         if (response.status === 409) return json({ error: "This lead may already exist. Please contact Article6 before resubmitting." }, 409);
         if (!response.ok) return json({ error: "We could not save this lead. Please retry later." }, 502);
         return json({ ok: true }, 201);
