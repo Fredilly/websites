@@ -22,23 +22,18 @@ export default {
       return json({ status: "ok", service: "article6-websites", runtime: "cloudflare-workers" });
     }
     if (url.pathname === "/api/referral/login" && request.method === "POST") {
-      if (!sameOrigin(request)) return json({ error: "Forbidden." }, 403);
-      if (!env.REFERRAL_USERNAME || !env.REFERRAL_PASSWORD || !env.REFERRAL_SESSION_SECRET) {
-        return json({ error: "Partner login is not configured." }, 503);
-      }
-      if (!(request.headers.get("content-type") || "").startsWith("application/json")) return json({ error: "Expected JSON." }, 415);
-      const raw = await request.text();
-      if (raw.length > 1024) return json({ error: "Request too large." }, 413);
-      let body;
-      try { body = JSON.parse(raw); } catch { return json({ error: "Invalid JSON." }, 400); }
-      const username = typeof body?.username === "string" ? body.username : "";
-      const password = typeof body?.password === "string" ? body.password : "";
-      const matchUser = await digest(username) === await digest(env.REFERRAL_USERNAME);
-      const matchPassword = await digest(password) === await digest(env.REFERRAL_PASSWORD);
-      if (!matchUser || !matchPassword) return json({ error: "Incorrect username or password." }, 401);
-      const expires = String(Date.now() + 8 * 3600000);
-      const token = expires + "." + await signature(expires, env.REFERRAL_SESSION_SECRET);
-      return json({ ok: true }, 200, { "set-cookie": "referral_session=" + token + "; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=28800" });
+      if (!sameOrigin(request)) return json({error:"Forbidden"},403);
+      if (!(request.headers.get("content-type")||"").startsWith("application/json")) return json({error:"Expected JSON"},415);
+      const raw=await request.text(); if(raw.length>1024)return json({error:"Too large"},413);
+      let body;try{body=JSON.parse(raw)}catch{return json({error:"Invalid JSON"},400)}
+      if(typeof body.username!=="string"||typeof body.password!=="string"||body.username.length>40||body.password.length>128)return json({error:"Invalid input"},400);
+      try {
+        const result=await referralAuth(env,{action:"login",username:body.username,password:body.password});
+        if(result.status!==200)return json({error:"Incorrect credentials or account unavailable"},result.status===401?401:503);
+        const token=result.body.session;
+        if(typeof token!=="string"||token.length>1024)return json({error:"Invalid upstream session"},502);
+        return json({ok:true,agent:result.body.agent},200,{"set-cookie":"referral_session="+token+"; Path=/api/referral; HttpOnly; Secure; SameSite=Strict; Max-Age=28800"});
+      }catch{return json({error:"Authentication unavailable"},503)}
     }
     if (url.pathname === "/api/referral/logout" && request.method === "POST") {
       if (!sameOrigin(request)) return json({ error: "Forbidden." }, 403);
