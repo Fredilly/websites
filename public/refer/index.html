@@ -85,6 +85,29 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 (function(){
 const loginForm=document.getElementById('login-form'), loginStatus=document.getElementById('login-status'), referralForm=document.getElementById('referral-form');
 const status=document.getElementById('status'), button=document.getElementById('submit');
+async function loadReferrals(){
+ const list=document.getElementById('referral-list');
+ list.replaceChildren();list.textContent='Loading referrals...';
+ try{
+  const response=await fetch('/api/referral/mine',{credentials:'same-origin',cache:'no-store'});
+  const data=await response.json();
+  if(!response.ok)throw Error(data.error||'Unable to load referrals');
+  const refs=Array.isArray(data.referrals)?data.referrals:[];
+  document.getElementById('referral-count').textContent=String(refs.length)+(refs.length===100?'+':'');
+  list.replaceChildren();
+  if(!refs.length){list.textContent='No referrals yet. Your submitted clients will appear here.';return;}
+  for(const ref of refs){
+   const item=document.createElement('div');item.className='refitem';
+   const name=document.createElement('strong');name.textContent=ref.company||'Business';
+   const details=document.createElement('span');
+   const stage=String(ref.status||'NEW').replaceAll('_',' ');
+   const when=ref.createdAt?new Date(ref.createdAt).toLocaleDateString():'';
+   details.textContent=[stage,String(ref.service||'').replaceAll('_',' '),when].filter(Boolean).join(' · ');
+   item.append(name,details);list.append(item);
+  }
+ }catch(e){list.textContent=e.message||'Could not load referrals.';}
+}
+document.getElementById('refresh-referrals').addEventListener('click',()=>{void loadReferrals()});
 function showForm(){loginForm.hidden=true;referralForm.hidden=false;document.getElementById("account").hidden=false;document.getElementById("progress").hidden=false;void loadReferrals();}
 fetch('/api/referral/session',{credentials:'same-origin'}).then(r=>r.json()).then(v=>{if(v.authenticated)showForm()}).catch(()=>{});
 loginForm.addEventListener('submit',async function(e){
@@ -113,7 +136,7 @@ referralForm.addEventListener('submit',async function(e){
   const result=await response.json();
   if(!response.ok)throw Error(result.error||'We could not save the referral.');
   status.className='success';status.textContent='Referral saved successfully. Thank you.';
-  referralForm.reset();
+  referralForm.reset();void loadReferrals();
  }catch(err){
   status.className='error';status.textContent=err.message||'Submission failed. Please check with Article6.';
   if(err.message?.includes('log in')){referralForm.hidden=true;loginForm.hidden=false;document.getElementById("account").hidden=true;}
