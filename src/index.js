@@ -47,6 +47,7 @@ export default {
         return json({authenticated:r.status===200,agent:r.status===200?r.body.agent:undefined},200,r.status===200?{}:{"set-cookie":cleared});
       }catch{return json({authenticated:false,error:"Authentication service unavailable"},503)}
     }
+    if(url.pathname==="/api/referral/mine" && request.method==="GET") { const session=sessionCookie(request); if(!session)return json({error:"Sign in required"},401); try { const r=await referralAuth(env,{action:"my_referrals",session}); return r.status===200?json({referrals:r.body.referrals||[]}):json({error:"Unable to load your referrals"},r.status===401?401:503); } catch {return json({error:"Referral service unavailable"},503)} }
     if(url.pathname==="/api/referral/change-password"&&request.method==="POST"){
       if(!sameOrigin(request))return json({error:"Forbidden"},403);
       const token=sessionCookie(request);if(!token)return json({error:"Please log in again"},401);
