@@ -102,7 +102,7 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 (function(){
 const loginForm=document.getElementById('login-form'), loginStatus=document.getElementById('login-status'), referralForm=document.getElementById('referral-form');
 const status=document.getElementById('status'), button=document.getElementById('submit');
-let ownReferrals=[], page=0, activeTab='new';
+let ownReferrals=[], page=1, activeTab='new', matching=0, totalPages=1, latestRequest=0;
 const pageSize=8;
 function setTab(tab){
  activeTab=tab;
@@ -120,25 +120,17 @@ document.getElementById('partner-tabs').addEventListener('click',e=>{
 });
 function renderReferrals(){
  const list=document.getElementById('referral-list');
- const q=document.getElementById('referral-search').value.trim().toLowerCase();
- const selected=document.getElementById('referral-filter').value;
- const common=['NEW','CONTACTED','ENGAGED','OPPORTUNITY','CLOSED_WON'];
- const filtered=ownReferrals.filter(r=>(!q||String(r.company||'').toLowerCase().includes(q))&&
- (selected==='ALL'||(selected==='OTHER'?!common.includes(r.status):r.status===selected)));
- const pages=Math.max(1,Math.ceil(filtered.length/pageSize));
- page=Math.min(page,pages-1);
- const start=page*pageSize;
  list.replaceChildren();
- document.getElementById('referral-range').textContent=filtered.length?
-  (start+1)+'–'+Math.min(start+pageSize,filtered.length)+' of '+filtered.length+
-  (ownReferrals.length===100?' (latest 100 loaded)':''):'No matching referrals';
- document.getElementById('referral-prev').disabled=page===0;
- document.getElementById('referral-next').disabled=page>=pages-1;
- if(!filtered.length){list.textContent=ownReferrals.length?'No referrals match these filters.':'No referrals yet. Your submitted clients will appear here.';return;}
- const refs=filtered.slice(start,start+pageSize);
+ document.getElementById('referral-range').textContent=matching?
+  ((page-1)*pageSize+1)+'–'+Math.min(page*pageSize,matching)+' of '+matching+' matching referrals'
+  :'No matching referrals';
+ document.getElementById('referral-prev').disabled=page<=1;
+ document.getElementById('referral-next').disabled=page>=totalPages;
+ if(!ownReferrals.length){list.textContent=matching?'No referrals on this page.':'No referrals match your search.';return;}
+ const refs=ownReferrals;
   refs.forEach((ref,index)=>{
    const item=document.createElement('div');item.className='refitem';
-   const number=document.createElement('span');number.className='refnum';number.textContent=String(start+index+1).padStart(2,'0');
+   const number=document.createElement('span');number.className='refnum';number.textContent=String((page-1)*pageSize+index+1).padStart(2,'0');
    const body=document.createElement('div');body.className='refbody';
    const name=document.createElement('strong');name.textContent=ref.company||'Business';
    const meta=document.createElement('span');meta.className='refmeta';
@@ -156,28 +148,39 @@ function renderReferrals(){
   });
 }
 async function loadReferrals(){
+ const request=++latestRequest;
  const list=document.getElementById('referral-list');
  list.textContent='Loading referrals...';
  try{
-  const response=await fetch('/api/referral/mine',{credentials:'same-origin',cache:'no-store'});
+  const params=new URLSearchParams({
+   page:String(page),pageSize:String(pageSize),
+   search:document.getElementById('referral-search').value.trim(),
+   status:document.getElementById('referral-filter').value
+  });
+  const response=await fetch('/api/referral/mine?'+params.toString(),{credentials:'same-origin',cache:'no-store'});
   const data=await response.json();
+  if(request!==latestRequest)return;
   if(!response.ok)throw Error(data.error||'Unable to load referrals');
-  const refs=Array.isArray(data.referrals)?data.referrals:[];
-  ownReferrals=refs;
-  document.getElementById('referral-count').textContent=String(refs.length)+(refs.length===100?'+':'');
-  document.getElementById('tab-count').textContent=String(refs.length)+(refs.length===100?'+':'');
-  document.getElementById('count-engaged').textContent=String(refs.filter(r=>r.status==='ENGAGED').length);
-  document.getElementById('count-opportunities').textContent=String(refs.filter(r=>r.status==='OPPORTUNITY').length);
-  document.getElementById('count-won').textContent=String(refs.filter(r=>r.status==='CLOSED_WON').length);
+  ownReferrals=Array.isArray(data.referrals)?data.referrals:[];
+  page=Number(data.page)||1;
+  matching=Number(data.matching)||0;
+  totalPages=Math.max(1,Math.ceil(matching/pageSize));
+  document.getElementById('referral-count').textContent=String(data.total||0);
+  document.getElementById('tab-count').textContent=String(data.total||0);
+  document.getElementById('count-engaged').textContent=String(data.engaged||0);
+  document.getElementById('count-opportunities').textContent=String(data.opportunities||0);
+  document.getElementById('count-won').textContent=String(data.won||0);
   renderReferrals();
-
- }catch(e){list.textContent=e.message||'Could not load referrals.';}
+ }catch(e){if(request===latestRequest)list.textContent=e.message||'Could not load referrals.';}
 }
 document.getElementById('refresh-referrals').addEventListener('click',()=>{void loadReferrals()});
-document.getElementById('referral-search').addEventListener('input',()=>{page=0;renderReferrals()});
-document.getElementById('referral-filter').addEventListener('change',()=>{page=0;renderReferrals()});
-document.getElementById('referral-prev').addEventListener('click',()=>{if(page>0){page--;renderReferrals()}});
-document.getElementById('referral-next').addEventListener('click',()=>{page++;renderReferrals()});
+let searchTimer;
+document.getElementById('referral-search').addEventListener('input',()=>{
+ clearTimeout(searchTimer);searchTimer=setTimeout(()=>{page=1;void loadReferrals()},250);
+});
+document.getElementById('referral-filter').addEventListener('change',()=>{page=1;void loadReferrals()});
+document.getElementById('referral-prev').addEventListener('click',()=>{if(page>1){page--;void loadReferrals()}});
+document.getElementById('referral-next').addEventListener('click',()=>{if(page<totalPages){page++;void loadReferrals()}});
 function showForm(){loginForm.hidden=true;document.getElementById('partner-tabs').hidden=false;document.getElementById("account").hidden=false;setTab(activeTab);void loadReferrals();}
 fetch('/api/referral/session',{credentials:'same-origin'}).then(r=>r.json()).then(v=>{if(v.authenticated)showForm()}).catch(()=>{});
 loginForm.addEventListener('submit',async function(e){
