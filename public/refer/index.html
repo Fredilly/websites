@@ -49,7 +49,7 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <div class="progress-header"><div><p class="heading">01 / My progress</p><h2 class="progress-title">My referrals <span id="referral-count" aria-label="Total referrals">0</span></h2></div><button type="button" id="refresh-referrals" class="refresh-button">Refresh</button></div>
 <p class="hint" style="margin:8px 0 18px">Your introductions, newest first. Live status updates come from Article6.</p>
 <div id="progress-stats" class="progress-stats" aria-label="Referral summary">
- <div class="progress-stat"><strong id="count-engaged">0</strong><span>In conversation</span></div>
+ <div class="progress-stat"><strong id="count-engaged">0</strong><span>Engaged</span></div>
  <div class="progress-stat"><strong id="count-opportunities">0</strong><span>Opportunities</span></div>
  <div class="progress-stat"><strong id="count-won">0</strong><span>Won</span></div>
 </div>
@@ -121,7 +121,7 @@ async function loadReferrals(){
    body.append(name,meta,interest);
    const stage=String(ref.status||'NEW');
    const badge=document.createElement('span');badge.className='refstatus';badge.dataset.stage=stage;
-   badge.textContent=({NEW:'Received',CONTACTED:'Contacted',ENGAGED:'In conversation',OPPORTUNITY:'Opportunity',NURTURE:'Follow-up later',CLOSED_WON:'Won',CLOSED_NO:'Closed',PARKED:'On hold',DO_NOT_CONTACT:'Do not contact'})[stage]||stage.replaceAll('_',' ');
+   badge.textContent=({NEW:'Received',CONTACTED:'Contacted',ENGAGED:'Engaged',OPPORTUNITY:'Opportunity',NURTURE:'Follow-up later',CLOSED_WON:'Won',CLOSED_NO:'Closed',PARKED:'On hold',DO_NOT_CONTACT:'Do not contact'})[stage]||stage.replaceAll('_',' ');
    item.append(number,body,badge);list.append(item);
   });
  }catch(e){list.textContent=e.message||'Could not load referrals.';}
