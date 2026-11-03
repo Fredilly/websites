@@ -24,18 +24,19 @@ textarea{resize:vertical;min-height:92px}input:focus,select:focus,textarea:focus
 .hint{font-size:12px;color:#626874;margin:0}.heading{font-size:12px;font-weight:600;color:#626874;letter-spacing:.08em;text-transform:uppercase;margin:0}
 button{font:inherit;font-weight:600;background:#101215;color:white;border:0;padding:15px 20px;min-height:52px;border-radius:11px;cursor:pointer}
 button:disabled{opacity:.6;cursor:wait}form[hidden],section[hidden]{display:none}.progress{background:var(--surface,#fff);border:1px solid #E2E4E9;border-radius:22px;padding:clamp(20px,5vw,38px);margin-bottom:20px}.refitem{padding:12px 0;border-top:1px solid #E2E4E9}.refitem strong{display:block}.refitem span{font-size:13px;color:var(--muted,#626874)}
+.progress-header{display:flex;align-items:center;justify-content:space-between;gap:12px}.progress-title{margin:7px 0 0;font-size:27px;font-weight:600;letter-spacing:-.035em}.progress-title span{display:inline-block;padding:3px 10px;margin-left:5px;border-radius:9px;background:#edf0ff;color:#3047d4;font-size:22px}.refresh-button{padding:10px 14px;min-height:40px;font-size:14px}.refitem{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:start;padding:17px 0}.refnum{display:grid;place-items:center;width:32px;height:32px;border:1px solid #d9dde5;border-radius:9px;color:#59616e;font-size:13px;font-weight:600}.refbody{min-width:0}.refbody strong{font-size:15px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}.refmeta{display:block;margin-top:4px;font-size:13px;color:#626874;line-height:1.6}.refstatus{display:inline-block;border-radius:100px;padding:5px 9px;font-size:11px;font-weight:600;letter-spacing:.015em;background:#edf0f4;color:#414957;white-space:nowrap}.refstatus[data-stage="ENGAGED"],.refstatus[data-stage="OPPORTUNITY"]{background:#e8efff;color:#2555a5}.refstatus[data-stage="CLOSED_WON"]{background:#e7f7ee;color:#166534}.refstatus[data-stage="CLOSED_NO"]{background:#faecec;color:#a12e2e}
 #status{font-size:14px;line-height:1.5;min-height:21px}#status.error{color:#B42318}#status.success{color:#166534}
 footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
-@media(max-width:570px){.grid{grid-template-columns:1fr}main{padding-top:36px}.lede{margin-bottom:24px}}
-@media(prefers-color-scheme:dark){:root{background:#0D0F12;color:#F2F3F5}header,footer{border-color:#23272E}form{background:#14171B;border-color:#30343B}input,select,textarea{background:#191D23;color:#F2F3F5;border-color:#525966}.muted,.lede,.hint,small,.heading{color:#A6ACB6}button{background:#F2F3F5;color:#101215}#status.success{color:#86EFAC}.progress{background:#14171B;border-color:#30343B}.refitem{border-color:#30343B}}
+@media(max-width:570px){.grid{grid-template-columns:1fr}main{padding-top:36px}.lede{margin-bottom:24px}.refitem{grid-template-columns:30px minmax(0,1fr);gap:10px}.refstatus{grid-column:2;justify-self:start}.progress-title{font-size:23px}.refresh-button{padding:9px 12px}}
+@media(prefers-color-scheme:dark){:root{background:#0D0F12;color:#F2F3F5}header,footer{border-color:#23272E}form{background:#14171B;border-color:#30343B}input,select,textarea{background:#191D23;color:#F2F3F5;border-color:#525966}.muted,.lede,.hint,small,.heading{color:#A6ACB6}button{background:#F2F3F5;color:#101215}#status.success{color:#86EFAC}.progress{background:#14171B;border-color:#30343B}.refitem{border-color:#30343B}.refnum{border-color:#434a55;color:#bdc4ce}.progress-title span{background:#272f58;color:#b7c5ff}.refstatus{background:#333945;color:#eceef4}.refstatus[data-stage="ENGAGED"],.refstatus[data-stage="OPPORTUNITY"]{background:#213755;color:#b5d4ff}.refstatus[data-stage="CLOSED_WON"]{background:#1c4536;color:#a7f3d0}.refstatus[data-stage="CLOSED_NO"]{background:#532d2d;color:#fecaca}}
 </style>
 </head>
 <body>
 <header><a class="brand" href="/">Article6 Studio</a><small>Partner referrals</small></header>
 <main>
-<p class="eyebrow">New opportunity</p>
-<h1>Refer a client.</h1>
-<p class="lede">A quick introduction is enough. Share what you know; we'll handle the follow-up.</p>
+<p class="eyebrow">Partner workspace</p>
+<h1>Your referrals.</h1>
+<p class="lede">Track your introductions and add new clients below.</p>
 <form id="login-form" autocomplete="on">
 <p class="heading">Partner sign in</p>
 <div class="field"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required></div>
@@ -44,12 +45,12 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <div id="login-status" role="status" aria-live="polite"></div>
 </form>
 <section id="progress" hidden class="progress" aria-label="My referrals">
-<div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><p class="heading">My progress</p><h2 style="margin:5px 0;font-size:28px">My referrals <span id="referral-count">0</span></h2></div><button type="button" id="refresh-referrals" style="padding:10px 14px;min-height:40px">Refresh</button></div>
-<p class="hint" style="margin:8px 0 14px">Only referrals you submitted are shown. Updates come from Article6's sales records.</p>
+<div class="progress-header"><div><p class="heading">01 / My progress</p><h2 class="progress-title">My referrals <span id="referral-count" aria-label="Total referrals">0</span></h2></div><button type="button" id="refresh-referrals" class="refresh-button">Refresh</button></div>
+<p class="hint" style="margin:8px 0 18px">Your submitted clients, newest first. Statuses update from Article6.</p>
 <div id="referral-list" aria-live="polite"></div>
 </section>
 <form id="referral-form" hidden>
-<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><p class="heading">Who are we speaking to?</p><button id="logout" type="button" style="background:transparent;color:var(--ink);border:1px solid #C9CED7;padding:9px 12px;min-height:38px;font-size:13px">Sign out</button></div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><p class="heading">02 / Add a referral</p><button id="logout" type="button" style="background:transparent;color:var(--ink);border:1px solid #C9CED7;padding:9px 12px;min-height:38px;font-size:13px">Sign out</button></div>
 <div class="grid">
 <div class="field"><label for="company">Business name *</label><input id="company" name="company" maxlength="120" autocomplete="organization" required placeholder="Company or business"></div>
 <div class="field"><label for="name">Contact name *</label><input id="name" name="name" maxlength="120" autocomplete="name" required placeholder="Decision-maker's name"></div>
@@ -96,15 +97,20 @@ async function loadReferrals(){
   document.getElementById('referral-count').textContent=String(refs.length)+(refs.length===100?'+':'');
   list.replaceChildren();
   if(!refs.length){list.textContent='No referrals yet. Your submitted clients will appear here.';return;}
-  for(const ref of refs){
+  refs.forEach((ref,index)=>{
    const item=document.createElement('div');item.className='refitem';
+   const number=document.createElement('span');number.className='refnum';number.textContent=String(index+1).padStart(2,'0');
+   const body=document.createElement('div');body.className='refbody';
    const name=document.createElement('strong');name.textContent=ref.company||'Business';
-   const details=document.createElement('span');
-   const stage=String(ref.status||'NEW').replaceAll('_',' ');
-   const when=ref.createdAt?new Date(ref.createdAt).toLocaleDateString():'';
-   details.textContent=[stage,String(ref.service||'').replaceAll('_',' '),when].filter(Boolean).join(' · ');
-   item.append(name,details);list.append(item);
-  }
+   const meta=document.createElement('span');meta.className='refmeta';
+   const service=({WEBSITE_DESIGN:'New website',WEBSITE_REDESIGN:'Website redesign',WEBSITE_DEVELOPMENT:'Website development',SEO_GEO:'SEO / AI visibility',OTHER:'Other service'})[ref.service]||String(ref.service||'Service not specified').replaceAll('_',' ');
+   const when=ref.createdAt?new Date(ref.createdAt).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}):'';
+   meta.textContent=[service,when].filter(Boolean).join(' · ');
+   body.append(name,meta);
+   const stage=String(ref.status||'NEW');
+   const badge=document.createElement('span');badge.className='refstatus';badge.dataset.stage=stage;badge.textContent=stage.replaceAll('_',' ');
+   item.append(number,body,badge);list.append(item);
+  });
  }catch(e){list.textContent=e.message||'Could not load referrals.';}
 }
 document.getElementById('refresh-referrals').addEventListener('click',()=>{void loadReferrals()});
