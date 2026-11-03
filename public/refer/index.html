@@ -23,13 +23,14 @@ input,select,textarea{width:100%;font:inherit;color:#101215;border:1px solid #C9
 textarea{resize:vertical;min-height:92px}input:focus,select:focus,textarea:focus{outline:2px solid #2B3FFF;outline-offset:1px}
 .hint{font-size:12px;color:#626874;margin:0}.heading{font-size:12px;font-weight:600;color:#626874;letter-spacing:.08em;text-transform:uppercase;margin:0}
 button{font:inherit;font-weight:600;background:#101215;color:white;border:0;padding:15px 20px;min-height:52px;border-radius:11px;cursor:pointer}
-button:disabled{opacity:.6;cursor:wait}form[hidden],section[hidden]{display:none}.progress{background:var(--surface,#fff);border:1px solid #E2E4E9;border-radius:22px;padding:clamp(20px,5vw,38px);margin-bottom:20px}.refitem{padding:12px 0;border-top:1px solid #E2E4E9}.refitem strong{display:block}.refitem span{font-size:13px;color:var(--muted,#626874)}
+button:disabled{opacity:.6;cursor:wait}[hidden]{display:none!important}.progress{background:var(--surface,#fff);border:1px solid #E2E4E9;border-radius:22px;padding:clamp(20px,5vw,38px);margin-bottom:20px}.refitem{padding:12px 0;border-top:1px solid #E2E4E9}.refitem strong{display:block}.refitem span{font-size:13px;color:var(--muted,#626874)}
 .progress-header{display:flex;align-items:center;justify-content:space-between;gap:12px}.progress-title{margin:7px 0 0;font-size:27px;font-weight:600;letter-spacing:-.035em}.progress-title span{display:inline-block;padding:3px 10px;margin-left:5px;border-radius:9px;background:#edf0ff;color:#3047d4;font-size:22px}.refresh-button{padding:10px 14px;min-height:40px;font-size:14px}.refitem{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:start;padding:17px 0}.refnum{display:grid;place-items:center;width:32px;height:32px;border:1px solid #d9dde5;border-radius:9px;color:#59616e;font-size:13px;font-weight:600}.refbody{min-width:0}.refbody strong{font-size:15px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}.refmeta{display:block;margin-top:4px;font-size:13px;color:#626874;line-height:1.6}.refstatus{display:inline-block;border-radius:100px;padding:5px 9px;font-size:11px;font-weight:600;letter-spacing:.015em;background:#edf0f4;color:#414957;white-space:nowrap}.refstatus[data-stage="ENGAGED"],.refstatus[data-stage="OPPORTUNITY"]{background:#e8efff;color:#2555a5}.refstatus[data-stage="CLOSED_WON"]{background:#e7f7ee;color:#166534}.refstatus[data-stage="CLOSED_NO"]{background:#faecec;color:#a12e2e}
 .progress-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 19px}.progress-stat{border-radius:11px;background:#f5f6fa;border:1px solid #e8eaf0;padding:14px 11px}.progress-stat strong{display:block;font-size:24px;line-height:1.2;font-weight:600;letter-spacing:-.04em}.progress-stat span{display:block;margin-top:4px;font-size:11px;line-height:1.35;color:#626874}.refinterest{display:block;margin-top:5px;font-size:12px;line-height:1.5;color:#626874}
+.partner-tabs{display:flex;gap:8px;margin:0 0 18px;padding:5px;border:1px solid #e0e4ea;border-radius:14px;background:#fff}.tab{flex:1;min-height:48px;background:transparent;color:#525967;padding:10px 12px;font-size:14px;border-radius:10px;text-align:center}.tab.active{background:#101215;color:#fff}.tab span{display:inline-block;margin-left:5px;opacity:.8}.referral-tools{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:12px;margin-bottom:10px}.referral-tools input,.referral-tools select{min-height:44px;padding:10px 12px;font-size:14px}.referral-tools label{font-size:12px;color:#626874}.referral-pager{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px;padding-top:15px;border-top:1px solid #e2e4e9;font-size:12px;color:#626874}.pager-actions{display:flex;gap:6px}.pager-button{min-height:36px;border:1px solid #d6dbe3;border-radius:8px;background:transparent;color:inherit;font-size:12px;padding:7px 11px}.pager-button:disabled{opacity:.35;cursor:default}
 #status{font-size:14px;line-height:1.5;min-height:21px}#status.error{color:#B42318}#status.success{color:#166534}
 footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
-@media(max-width:570px){.grid{grid-template-columns:1fr}main{padding-top:36px}.lede{margin-bottom:24px}.refitem{grid-template-columns:30px minmax(0,1fr);gap:10px}.refstatus{grid-column:2;justify-self:start}.progress-title{font-size:23px}.refresh-button{padding:9px 12px}.progress-stats{gap:6px}.progress-stat{padding:11px 9px}.progress-stat strong{font-size:22px}}
-@media(prefers-color-scheme:dark){:root{background:#0D0F12;color:#F2F3F5}header,footer{border-color:#23272E}form{background:#14171B;border-color:#30343B}input,select,textarea{background:#191D23;color:#F2F3F5;border-color:#525966}.muted,.lede,.hint,small,.heading{color:#A6ACB6}button{background:#F2F3F5;color:#101215}#status.success{color:#86EFAC}.progress{background:#14171B;border-color:#30343B}.refitem{border-color:#30343B}.refnum{border-color:#434a55;color:#bdc4ce}.progress-title span{background:#272f58;color:#b7c5ff}.refstatus{background:#333945;color:#eceef4}.refstatus[data-stage="ENGAGED"],.refstatus[data-stage="OPPORTUNITY"]{background:#213755;color:#b5d4ff}.refstatus[data-stage="CLOSED_WON"]{background:#1c4536;color:#a7f3d0}.refstatus[data-stage="CLOSED_NO"]{background:#532d2d;color:#fecaca}.progress-stat{background:#1d222b;border-color:#343b46}.progress-stat span,.refinterest{color:#a6acb6}}
+@media(max-width:570px){.grid{grid-template-columns:1fr}main{padding-top:36px}.lede{margin-bottom:24px}.refitem{grid-template-columns:30px minmax(0,1fr);gap:10px}.refstatus{grid-column:2;justify-self:start}.progress-title{font-size:23px}.refresh-button{padding:9px 12px}.progress-stats{gap:6px}.progress-stat{padding:11px 9px}.progress-stat strong{font-size:22px}.referral-tools{grid-template-columns:1fr}.partner-tabs{gap:4px}.tab{padding:9px 7px}.referral-pager{flex-wrap:wrap}}
+@media(prefers-color-scheme:dark){:root{background:#0D0F12;color:#F2F3F5}header,footer{border-color:#23272E}form{background:#14171B;border-color:#30343B}input,select,textarea{background:#191D23;color:#F2F3F5;border-color:#525966}.muted,.lede,.hint,small,.heading{color:#A6ACB6}button{background:#F2F3F5;color:#101215}#status.success{color:#86EFAC}.progress{background:#14171B;border-color:#30343B}.refitem{border-color:#30343B}.refnum{border-color:#434a55;color:#bdc4ce}.progress-title span{background:#272f58;color:#b7c5ff}.refstatus{background:#333945;color:#eceef4}.refstatus[data-stage="ENGAGED"],.refstatus[data-stage="OPPORTUNITY"]{background:#213755;color:#b5d4ff}.refstatus[data-stage="CLOSED_WON"]{background:#1c4536;color:#a7f3d0}.refstatus[data-stage="CLOSED_NO"]{background:#532d2d;color:#fecaca}.progress-stat{background:#1d222b;border-color:#343b46}.progress-stat span,.refinterest{color:#a6acb6}.partner-tabs{background:#14171b;border-color:#30343b}.tab{color:#c4c9d2}.tab.active{background:#f2f3f5;color:#101215}.pager-button{color:#e4e7ed;border-color:#525966}.referral-pager{border-color:#30343b}}
 </style>
 </head>
 <body>
@@ -37,7 +38,7 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <main>
 <p class="eyebrow">Partner workspace</p>
 <h1>Your referrals.</h1>
-<p class="lede">Track your introductions and add new clients below.</p>
+<p class="lede">Add new clients and track your introductions in one place.</p>
 <form id="login-form" autocomplete="on">
 <p class="heading">Partner sign in</p>
 <div class="field"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required></div>
@@ -45,18 +46,27 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <button type="submit" id="login-button">Sign in</button>
 <div id="login-status" role="status" aria-live="polite"></div>
 </form>
+<nav id="partner-tabs" hidden class="partner-tabs" aria-label="Referral workspace">
+<button type="button" class="tab active" data-tab="new" aria-selected="true">+ Add referral</button>
+<button type="button" class="tab" data-tab="history" aria-selected="false">My referrals <span id="tab-count">0</span></button>
+</nav>
 <section id="progress" hidden class="progress" aria-label="My referrals">
-<div class="progress-header"><div><p class="heading">01 / My progress</p><h2 class="progress-title">My referrals <span id="referral-count" aria-label="Total referrals">0</span></h2></div><button type="button" id="refresh-referrals" class="refresh-button">Refresh</button></div>
+<div class="progress-header"><div><p class="heading">My progress</p><h2 class="progress-title">My referrals <span id="referral-count" aria-label="Total referrals">0</span></h2></div><button type="button" id="refresh-referrals" class="refresh-button">Refresh</button></div>
 <p class="hint" style="margin:8px 0 18px">Your introductions, newest first. Live status updates come from Article6.</p>
 <div id="progress-stats" class="progress-stats" aria-label="Referral summary">
  <div class="progress-stat"><strong id="count-engaged">0</strong><span>Engaged</span></div>
  <div class="progress-stat"><strong id="count-opportunities">0</strong><span>Opportunities</span></div>
  <div class="progress-stat"><strong id="count-won">0</strong><span>Won</span></div>
 </div>
+<div class="referral-tools">
+<div class="field"><label for="referral-search">Search referrals</label><input id="referral-search" type="search" placeholder="Search by business name"></div>
+<div class="field"><label for="referral-filter">Status</label><select id="referral-filter"><option value="ALL">All statuses</option><option value="NEW">Received</option><option value="CONTACTED">Contacted</option><option value="ENGAGED">Engaged</option><option value="OPPORTUNITY">Opportunity</option><option value="CLOSED_WON">Won</option><option value="OTHER">Other statuses</option></select></div>
+</div>
 <div id="referral-list" aria-live="polite"></div>
+<div class="referral-pager"><span id="referral-range">0 referrals</span><div class="pager-actions"><button type="button" id="referral-prev" class="pager-button">Previous</button><button type="button" id="referral-next" class="pager-button">Next</button></div></div>
 </section>
 <form id="referral-form" hidden>
-<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><p class="heading">02 / Add a referral</p><button id="logout" type="button" style="background:transparent;color:var(--ink);border:1px solid #C9CED7;padding:9px 12px;min-height:38px;font-size:13px">Sign out</button></div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><p class="heading">New referral</p><button id="logout" type="button" style="background:transparent;color:var(--ink);border:1px solid #C9CED7;padding:9px 12px;min-height:38px;font-size:13px">Sign out</button></div>
 <div class="grid">
 <div class="field"><label for="company">Business name *</label><input id="company" name="company" maxlength="120" autocomplete="organization" required placeholder="Company or business"></div>
 <div class="field"><label for="name">Contact name *</label><input id="name" name="name" maxlength="120" autocomplete="name" required placeholder="Decision-maker's name"></div>
@@ -92,23 +102,35 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 (function(){
 const loginForm=document.getElementById('login-form'), loginStatus=document.getElementById('login-status'), referralForm=document.getElementById('referral-form');
 const status=document.getElementById('status'), button=document.getElementById('submit');
-async function loadReferrals(){
+let ownReferrals=[], page=1, activeTab='new', matching=0, totalPages=1, latestRequest=0;
+const pageSize=8;
+function setTab(tab){
+ activeTab=tab;
+ document.getElementById('partner-tabs').querySelectorAll('[data-tab]').forEach(b=>{
+   const selected=b.dataset.tab===tab;
+   b.classList.toggle('active',selected);
+   b.setAttribute('aria-selected',String(selected));
+ });
+ document.getElementById('progress').hidden=tab!=='history';
+ referralForm.hidden=tab!=='new';
+}
+document.getElementById('partner-tabs').addEventListener('click',e=>{
+ const tab=e.target.closest('[data-tab]');
+ if(tab)setTab(tab.dataset.tab);
+});
+function renderReferrals(){
  const list=document.getElementById('referral-list');
- list.replaceChildren();list.textContent='Loading referrals...';
- try{
-  const response=await fetch('/api/referral/mine',{credentials:'same-origin',cache:'no-store'});
-  const data=await response.json();
-  if(!response.ok)throw Error(data.error||'Unable to load referrals');
-  const refs=Array.isArray(data.referrals)?data.referrals:[];
-  document.getElementById('referral-count').textContent=String(refs.length)+(refs.length===100?'+':'');
-  list.replaceChildren();
-  document.getElementById('count-engaged').textContent=String(refs.filter(r=>r.status==='ENGAGED').length);
-  document.getElementById('count-opportunities').textContent=String(refs.filter(r=>r.status==='OPPORTUNITY').length);
-  document.getElementById('count-won').textContent=String(refs.filter(r=>r.status==='CLOSED_WON').length);
-  if(!refs.length){list.textContent='No referrals yet. Your submitted clients will appear here.';return;}
+ list.replaceChildren();
+ document.getElementById('referral-range').textContent=matching?
+  ((page-1)*pageSize+1)+'–'+Math.min(page*pageSize,matching)+' of '+matching+' matching referrals'
+  :'No matching referrals';
+ document.getElementById('referral-prev').disabled=page<=1;
+ document.getElementById('referral-next').disabled=page>=totalPages;
+ if(!ownReferrals.length){list.textContent=matching?'No referrals on this page.':'No referrals match your search.';return;}
+ const refs=ownReferrals;
   refs.forEach((ref,index)=>{
    const item=document.createElement('div');item.className='refitem';
-   const number=document.createElement('span');number.className='refnum';number.textContent=String(index+1).padStart(2,'0');
+   const number=document.createElement('span');number.className='refnum';number.textContent=String((page-1)*pageSize+index+1).padStart(2,'0');
    const body=document.createElement('div');body.className='refbody';
    const name=document.createElement('strong');name.textContent=ref.company||'Business';
    const meta=document.createElement('span');meta.className='refmeta';
@@ -124,10 +146,42 @@ async function loadReferrals(){
    badge.textContent=({NEW:'Received',CONTACTED:'Contacted',ENGAGED:'Engaged',OPPORTUNITY:'Opportunity',NURTURE:'Follow-up later',CLOSED_WON:'Won',CLOSED_NO:'Closed',PARKED:'On hold',DO_NOT_CONTACT:'Do not contact'})[stage]||stage.replaceAll('_',' ');
    item.append(number,body,badge);list.append(item);
   });
- }catch(e){list.textContent=e.message||'Could not load referrals.';}
+}
+async function loadReferrals(){
+ const request=++latestRequest;
+ const list=document.getElementById('referral-list');
+ list.textContent='Loading referrals...';
+ try{
+  const params=new URLSearchParams({
+   page:String(page),pageSize:String(pageSize),
+   search:document.getElementById('referral-search').value.trim(),
+   status:document.getElementById('referral-filter').value
+  });
+  const response=await fetch('/api/referral/mine?'+params.toString(),{credentials:'same-origin',cache:'no-store'});
+  const data=await response.json();
+  if(request!==latestRequest)return;
+  if(!response.ok)throw Error(data.error||'Unable to load referrals');
+  ownReferrals=Array.isArray(data.referrals)?data.referrals:[];
+  page=Number(data.page)||1;
+  matching=Number(data.matching)||0;
+  totalPages=Math.max(1,Math.ceil(matching/pageSize));
+  document.getElementById('referral-count').textContent=String(data.total||0);
+  document.getElementById('tab-count').textContent=String(data.total||0);
+  document.getElementById('count-engaged').textContent=String(data.engaged||0);
+  document.getElementById('count-opportunities').textContent=String(data.opportunities||0);
+  document.getElementById('count-won').textContent=String(data.won||0);
+  renderReferrals();
+ }catch(e){if(request===latestRequest)list.textContent=e.message||'Could not load referrals.';}
 }
 document.getElementById('refresh-referrals').addEventListener('click',()=>{void loadReferrals()});
-function showForm(){loginForm.hidden=true;referralForm.hidden=false;document.getElementById("account").hidden=false;document.getElementById("progress").hidden=false;void loadReferrals();}
+let searchTimer;
+document.getElementById('referral-search').addEventListener('input',()=>{
+ clearTimeout(searchTimer);searchTimer=setTimeout(()=>{page=1;void loadReferrals()},250);
+});
+document.getElementById('referral-filter').addEventListener('change',()=>{page=1;void loadReferrals()});
+document.getElementById('referral-prev').addEventListener('click',()=>{if(page>1){page--;void loadReferrals()}});
+document.getElementById('referral-next').addEventListener('click',()=>{if(page<totalPages){page++;void loadReferrals()}});
+function showForm(){loginForm.hidden=true;document.getElementById('partner-tabs').hidden=false;document.getElementById("account").hidden=false;setTab(activeTab);void loadReferrals();}
 fetch('/api/referral/session',{credentials:'same-origin'}).then(r=>r.json()).then(v=>{if(v.authenticated)showForm()}).catch(()=>{});
 loginForm.addEventListener('submit',async function(e){
  e.preventDefault();loginStatus.textContent='';
