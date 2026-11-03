@@ -37,8 +37,8 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <header><a class="brand" href="/">Article6 Studio</a><small>Partner referrals</small></header>
 <main>
 <p class="eyebrow">Partner workspace</p>
-<h1>Your referrals.</h1>
-<p class="lede">Add new clients and track your introductions in one place.</p>
+<h1 id="workspace-title">Your referrals.</h1>
+<p id="workspace-subtitle" class="lede">Add new clients and track your introductions in one place.</p>
 <form id="login-form" autocomplete="on">
 <p class="heading">Partner sign in</p>
 <div class="field"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required></div>
@@ -102,6 +102,13 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 (function(){
 const loginForm=document.getElementById('login-form'), loginStatus=document.getElementById('login-status'), referralForm=document.getElementById('referral-form');
 const status=document.getElementById('status'), button=document.getElementById('submit');
+function greet(agent) {
+ const firstName=typeof agent?.displayName==='string' ? agent.displayName.trim().split(/\s+/)[0] : '';
+ const hour=new Date().getHours();
+ const period=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+ document.getElementById('workspace-title').textContent=firstName?period+', '+firstName+'.':period+'.';
+ document.getElementById('workspace-subtitle').textContent='Add a new introduction or check how your referrals are progressing.';
+}
 let ownReferrals=[], page=1, activeTab='new', matching=0, totalPages=1, latestRequest=0;
 const pageSize=8;
 function setTab(tab){
@@ -181,8 +188,8 @@ document.getElementById('referral-search').addEventListener('input',()=>{
 document.getElementById('referral-filter').addEventListener('change',()=>{page=1;void loadReferrals()});
 document.getElementById('referral-prev').addEventListener('click',()=>{if(page>1){page--;void loadReferrals()}});
 document.getElementById('referral-next').addEventListener('click',()=>{if(page<totalPages){page++;void loadReferrals()}});
-function showForm(){loginForm.hidden=true;document.getElementById('partner-tabs').hidden=false;document.getElementById("account").hidden=false;setTab(activeTab);void loadReferrals();}
-fetch('/api/referral/session',{credentials:'same-origin'}).then(r=>r.json()).then(v=>{if(v.authenticated)showForm()}).catch(()=>{});
+function showForm(agent){greet(agent);loginForm.hidden=true;document.getElementById('partner-tabs').hidden=false;document.getElementById("account").hidden=false;setTab(activeTab);void loadReferrals();}
+fetch('/api/referral/session',{credentials:'same-origin'}).then(r=>r.json()).then(v=>{if(v.authenticated)showForm(v.agent)}).catch(()=>{});
 loginForm.addEventListener('submit',async function(e){
  e.preventDefault();loginStatus.textContent='';
  const loginButton=document.getElementById('login-button');loginButton.disabled=true;
@@ -191,7 +198,7 @@ loginForm.addEventListener('submit',async function(e){
   const response=await fetch('/api/referral/login',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(data)});
   const result=await response.json();
   if(!response.ok)throw Error(result.error||'Sign-in failed.');
-  loginForm.reset();showForm();
+  loginForm.reset();showForm(result.agent);
  }catch(err){loginStatus.className='error';loginStatus.textContent=err.message||'Unable to sign in.'}
  finally{loginButton.disabled=false}
 });
@@ -226,7 +233,7 @@ document.getElementById('password-form').addEventListener('submit',async functio
   const r=await fetch('/api/referral/change-password',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(data)});
   const b=await r.json();if(!r.ok)throw Error(b.error||'Could not change password');
   output.className='success';output.textContent='Password updated. Sign in again with your new password.';
-  document.getElementById('password-form').reset();referralForm.hidden=true;loginForm.hidden=false;document.getElementById('account').hidden=true;
+  document.getElementById('password-form').reset();referralForm.hidden=true;loginForm.hidden=false;document.getElementById('account').hidden=true;document.getElementById('partner-tabs').hidden=true;document.getElementById('progress').hidden=true;
  }catch(err){output.className='error';output.textContent=err.message||'Password change failed'}
 });
 })();
