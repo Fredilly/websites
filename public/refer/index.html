@@ -33,9 +33,9 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <body>
 <header><a class="brand" href="/">Article6 Studio</a><small>Partner referrals</small></header>
 <main>
-<p class="eyebrow">New opportunity</p>
-<h1>Refer a client.</h1>
-<p class="lede">A quick introduction is enough. Share what you know; we'll handle the follow-up.</p>
+<p class="eyebrow">Partner workspace</p>
+<h1>Your referrals.</h1>
+<p class="lede">Track your introductions and add new clients below.</p>
 <form id="login-form" autocomplete="on">
 <p class="heading">Partner sign in</p>
 <div class="field"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required></div>
@@ -44,12 +44,12 @@ footer{font-size:13px;color:#626874;border-top:1px solid #E2E4E9}
 <div id="login-status" role="status" aria-live="polite"></div>
 </form>
 <section id="progress" hidden class="progress" aria-label="My referrals">
-<div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><p class="heading">My progress</p><h2 style="margin:5px 0;font-size:28px">My referrals <span id="referral-count">0</span></h2></div><button type="button" id="refresh-referrals" style="padding:10px 14px;min-height:40px">Refresh</button></div>
-<p class="hint" style="margin:8px 0 14px">Only referrals you submitted are shown. Updates come from Article6's sales records.</p>
+<div class="progress-header"><div><p class="heading">01 / My progress</p><h2 class="progress-title">My referrals <span id="referral-count" aria-label="Total referrals">0</span></h2></div><button type="button" id="refresh-referrals" class="refresh-button">Refresh</button></div>
+<p class="hint" style="margin:8px 0 18px">Your submitted clients, newest first. Statuses update from Article6.</p>
 <div id="referral-list" aria-live="polite"></div>
 </section>
 <form id="referral-form" hidden>
-<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><p class="heading">Who are we speaking to?</p><button id="logout" type="button" style="background:transparent;color:var(--ink);border:1px solid #C9CED7;padding:9px 12px;min-height:38px;font-size:13px">Sign out</button></div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><p class="heading">02 / Add a referral</p><button id="logout" type="button" style="background:transparent;color:var(--ink);border:1px solid #C9CED7;padding:9px 12px;min-height:38px;font-size:13px">Sign out</button></div>
 <div class="grid">
 <div class="field"><label for="company">Business name *</label><input id="company" name="company" maxlength="120" autocomplete="organization" required placeholder="Company or business"></div>
 <div class="field"><label for="name">Contact name *</label><input id="name" name="name" maxlength="120" autocomplete="name" required placeholder="Decision-maker's name"></div>
