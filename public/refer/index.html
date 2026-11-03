@@ -97,15 +97,20 @@ async function loadReferrals(){
   document.getElementById('referral-count').textContent=String(refs.length)+(refs.length===100?'+':'');
   list.replaceChildren();
   if(!refs.length){list.textContent='No referrals yet. Your submitted clients will appear here.';return;}
-  for(const ref of refs){
+  refs.forEach((ref,index)=>{
    const item=document.createElement('div');item.className='refitem';
+   const number=document.createElement('span');number.className='refnum';number.textContent=String(index+1).padStart(2,'0');
+   const body=document.createElement('div');body.className='refbody';
    const name=document.createElement('strong');name.textContent=ref.company||'Business';
-   const details=document.createElement('span');
-   const stage=String(ref.status||'NEW').replaceAll('_',' ');
-   const when=ref.createdAt?new Date(ref.createdAt).toLocaleDateString():'';
-   details.textContent=[stage,String(ref.service||'').replaceAll('_',' '),when].filter(Boolean).join(' · ');
-   item.append(name,details);list.append(item);
-  }
+   const meta=document.createElement('span');meta.className='refmeta';
+   const service=({WEBSITE_DESIGN:'New website',WEBSITE_REDESIGN:'Website redesign',WEBSITE_DEVELOPMENT:'Website development',SEO_GEO:'SEO / AI visibility',OTHER:'Other service'})[ref.service]||String(ref.service||'Service not specified').replaceAll('_',' ');
+   const when=ref.createdAt?new Date(ref.createdAt).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}):'';
+   meta.textContent=[service,when].filter(Boolean).join(' · ');
+   body.append(name,meta);
+   const stage=String(ref.status||'NEW');
+   const badge=document.createElement('span');badge.className='refstatus';badge.dataset.stage=stage;badge.textContent=stage.replaceAll('_',' ');
+   item.append(number,body,badge);list.append(item);
+  });
  }catch(e){list.textContent=e.message||'Could not load referrals.';}
 }
 document.getElementById('refresh-referrals').addEventListener('click',()=>{void loadReferrals()});
