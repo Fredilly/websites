@@ -136,6 +136,25 @@ function renderReferrals(){
  document.getElementById('referral-next').disabled=page>=pages-1;
  if(!filtered.length){list.textContent=ownReferrals.length?'No referrals match these filters.':'No referrals yet. Your submitted clients will appear here.';return;}
  const refs=filtered.slice(start,start+pageSize);
+  refs.forEach((ref,index)=>{
+   const item=document.createElement('div');item.className='refitem';
+   const number=document.createElement('span');number.className='refnum';number.textContent=String(start+index+1).padStart(2,'0');
+   const body=document.createElement('div');body.className='refbody';
+   const name=document.createElement('strong');name.textContent=ref.company||'Business';
+   const meta=document.createElement('span');meta.className='refmeta';
+   const service=({WEBSITE_DESIGN:'New website',WEBSITE_REDESIGN:'Website redesign',WEBSITE_DEVELOPMENT:'Website development',SEO_GEO:'SEO / AI visibility',OTHER:'Other service'})[ref.service]||String(ref.service||'Service not specified').replaceAll('_',' ');
+   const when=ref.createdAt?new Date(ref.createdAt).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}):'';
+   meta.textContent=[service,when].filter(Boolean).join(' · ');
+   const interest=document.createElement('span');interest.className='refinterest';
+   const reported=({UNCONFIRMED:'Not yet confirmed',INTERESTED:'Interested in discussing',QUOTE_REQUESTED:'Requested a quote',MEETING_AGREED:'Meeting agreed'})[ref.interest]||String(ref.interest||'Not specified').replaceAll('_',' ');
+   interest.textContent='Original interest: '+reported;
+   body.append(name,meta,interest);
+   const stage=String(ref.status||'NEW');
+   const badge=document.createElement('span');badge.className='refstatus';badge.dataset.stage=stage;
+   badge.textContent=({NEW:'Received',CONTACTED:'Contacted',ENGAGED:'Engaged',OPPORTUNITY:'Opportunity',NURTURE:'Follow-up later',CLOSED_WON:'Won',CLOSED_NO:'Closed',PARKED:'On hold',DO_NOT_CONTACT:'Do not contact'})[stage]||stage.replaceAll('_',' ');
+   item.append(number,body,badge);list.append(item);
+  });
+}
 async function loadReferrals(){
  const list=document.getElementById('referral-list');
  list.textContent='Loading referrals...';
