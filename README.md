@@ -21,6 +21,10 @@ After the first deployment, add the custom domain `websites.article6.org` to the
 - `POST /api/contact` validates incoming enquiry data and is **disabled until the existing CRM endpoint is verified**. Set runtime secrets `CRM_INGEST_URL` and `CRM_INGEST_TOKEN` only after confirming the actual integration contract. No fake success responses.
 - The public homepage currently uses `mailto:contact@article6.org` so enquiries have a working fallback.
 
+## Selected work images
+
+`public/work/` holds the homepage portfolio images: real captures of scoop.article6.org, carbon.article6.org and store.article6.org, cropped and encoded as WebP at two widths each (`-1200`/`-2000` for desktop shots, `-400`/`-720` for phone shots). `og.jpg` is the social share image. Recapture at 2x and keep the same names to refresh them. Hope Fusion must not appear here (portfolio restriction).
+
 ## Local
 
 `npm install && npm run dev`

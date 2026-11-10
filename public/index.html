@@ -4,18 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Article6 Studio | Website design and development</title>
-<meta name="description" content="Article6 Studio designs and builds clear, fast, well-made websites for businesses that want a stronger web presence.">
-<meta name="theme-color" content="#F5F6F8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0D0F12" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Article6 Studio designs, builds and launches websites that do your business justice. Tell us about your business once; we take it from there.">
+<meta name="theme-color" content="#0B0C0E">
 <meta property="og:title" content="Article6 Studio | Website design and development">
-<meta property="og:description" content="Websites, designed and built properly.">
+<meta property="og:description" content="Websites that do your business justice.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://websites.article6.org/">
+<meta property="og:image" content="https://websites.article6.org/work/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://websites.article6.org/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101215'/%3E%3Ctext x='16' y='23' font-family='system-ui,sans-serif' font-size='20' font-weight='600' text-anchor='middle' fill='white'%3E6%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&display=swap">
-<script>document.documentElement.classList.add('js')</script>
+<link rel="preload" as="image" href="/work/scoop-desktop-1200.webp" imagesrcset="/work/scoop-desktop-1200.webp 1200w, /work/scoop-desktop-2000.webp 2000w" imagesizes="(max-width: 700px) 86vw, 900px" fetchpriority="high">
 <style>
 :root {
   --paper: #F5F6F8;
@@ -26,7 +30,15 @@
   --accent: #2B3FFF;
   --accent-ink: #FFFFFF;
   --gutter: clamp(20px, 4.5vw, 64px);
-  --section: clamp(72px, 10vw, 160px);
+  --section: clamp(96px, 13vw, 192px);
+  --radius: clamp(18px, 2.2vw, 30px);
+  --ease: cubic-bezier(.2, .7, .2, 1);
+
+  /* The gallery is a dark room in both colour schemes. */
+  --room: #0B0C0E;
+  --room-ink: #F2F3F5;
+  --room-muted: #8D939C;
+  --room-line: #24272D;
   color-scheme: light dark;
 }
 @media (prefers-color-scheme: dark) {
@@ -38,6 +50,7 @@
     --line: #23272E;
     --accent: #8493FF;
     --accent-ink: #0D0F12;
+    --room: #050607;
   }
 }
 
@@ -53,10 +66,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; text-decoration: none; }
-button, input { font: inherit; color: inherit; }
+img { display: block; max-width: 100%; height: auto; }
+button, input, textarea { font: inherit; color: inherit; }
 ::selection { background: var(--accent); color: var(--accent-ink); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-h1, h2, h3, p { margin: 0; }
+h1, h2, h3, p, figure { margin: 0; }
 
 .skip {
   position: absolute; left: var(--gutter); top: 8px; z-index: 10;
@@ -64,178 +78,265 @@ h1, h2, h3, p { margin: 0; }
   transform: translateY(-200%);
 }
 .skip:focus { transform: none; }
-
 .wrap { max-width: 1280px; margin-inline: auto; padding-inline: var(--gutter); }
+
+/* The opening (nav, hero, work) is one dark room in both colour schemes. */
+.opening { background: var(--room); color: var(--room-ink); }
+.opening ::selection { background: var(--accent); color: #fff; }
 
 /* Nav */
 .nav { display: flex; align-items: center; justify-content: space-between; height: 76px; }
 .brand { font-weight: 600; font-size: 19px; letter-spacing: -0.03em; }
-.brand span { color: var(--muted); font-weight: 400; margin-left: 0.35em; }
+.brand span { font-weight: 400; margin-left: 0.35em; }
 .nav-links { display: flex; align-items: center; gap: 28px; font-size: 15px; }
-.nav-links a:not(.btn) { color: var(--muted); transition: color .2s; }
-.nav-links a:not(.btn):hover { color: var(--ink); }
+.nav-links a:not(.btn) { color: var(--room-muted); transition: color .2s; }
+.nav-links a:not(.btn):hover { color: var(--room-ink); }
+.brand span { color: var(--room-muted); }
+.opening .btn { background: var(--room-ink); color: var(--room); }
+.opening .btn:hover { background: var(--accent); color: #fff; }
+.opening .lede { color: var(--room-muted); }
+.opening .textlink { text-decoration-color: var(--room-line); }
 
-/* Buttons */
+/* Buttons and links */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
-  height: 48px; padding: 0 22px; border-radius: 12px;
+  height: 48px; padding: 0 22px; border: 0; border-radius: 12px; cursor: pointer;
   background: var(--ink); color: var(--paper);
   font-size: 15px; font-weight: 500; white-space: nowrap;
   transition: background .2s, color .2s;
 }
 .btn:hover { background: var(--accent); color: var(--accent-ink); }
 .btn.sm { height: 40px; padding: 0 16px; border-radius: 10px; }
-.textlink { font-size: 15px; font-weight: 500; text-decoration: underline; text-underline-offset: 5px; text-decoration-color: var(--line); transition: text-decoration-color .2s; }
+.textlink {
+  font-size: 15px; font-weight: 500;
+  text-decoration: underline; text-underline-offset: 5px; text-decoration-color: var(--line);
+  transition: text-decoration-color .2s;
+}
 .textlink:hover { text-decoration-color: var(--accent); }
 
 /* Type */
 h1 {
-  font-size: clamp(46px, 8.2vw, 124px);
-  font-weight: 300; line-height: 1; letter-spacing: -0.05em;
-  max-width: 10em; text-wrap: balance;
+  font-size: clamp(46px, 7.6vw, 108px);
+  font-weight: 300; line-height: .98; letter-spacing: -0.055em;
 }
+h1 .l { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; }
+h1 .l > span { display: block; }
 h2 {
-  font-size: clamp(32px, 4.4vw, 56px);
-  font-weight: 300; line-height: 1.06; letter-spacing: -0.04em;
+  font-size: clamp(34px, 4.8vw, 64px);
+  font-weight: 300; line-height: 1.04; letter-spacing: -0.045em;
   text-wrap: balance;
 }
 h3 { font-size: clamp(21px, 2vw, 26px); font-weight: 400; line-height: 1.2; letter-spacing: -0.03em; }
-.lede { color: var(--muted); font-size: clamp(17px, 1.5vw, 20px); max-width: 42ch; }
-.muted { color: var(--muted); }
+.lede { color: var(--muted); font-size: clamp(17px, 1.5vw, 20px); max-width: 44ch; text-wrap: pretty; }
 
 /* Hero */
-.hero { padding-top: clamp(48px, 8vw, 120px); }
+.hero { padding-block: clamp(32px, 5vw, 64px) clamp(44px, 5vw, 72px); }
 .hero-row {
   display: flex; align-items: flex-end; justify-content: space-between; gap: 32px;
-  margin-top: clamp(28px, 4vw, 48px);
+  margin-top: clamp(28px, 3.5vw, 48px);
 }
 .actions { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 
-/* Demo */
-.demo { margin: clamp(48px, 7vw, 96px) 0 0; }
-.demo-bar {
-  display: none; align-items: center; gap: 20px; flex-wrap: wrap;
-  margin-bottom: 14px; font-size: 14px; color: var(--muted);
+/* The one orchestrated moment: the headline rises line by line on load. */
+@media (prefers-reduced-motion: no-preference) {
+  h1 .l > span { animation: rise 1.1s var(--ease) both; }
+  h1 .l:nth-child(2) > span { animation-delay: .09s; }
+  .hero-row { animation: fade .9s .45s var(--ease) both; }
+  @keyframes rise { from { transform: translateY(105%); } to { transform: none; } }
+  @keyframes fade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 }
-.js .demo-bar { display: flex; }
-.demo-bar label { white-space: nowrap; }
-.demo-bar output { min-width: 4.8em; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
-.presets { display: flex; gap: 4px; margin-left: auto; }
-.presets button {
-  height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px;
-  background: transparent; font-size: 13px; color: var(--muted); cursor: pointer;
-  transition: color .2s, border-color .2s;
-}
-.presets button:hover { color: var(--ink); border-color: var(--muted); }
-.range { flex: 1 1 200px; min-width: 140px; -webkit-appearance: none; appearance: none; background: transparent; height: 28px; cursor: ew-resize; margin: 0; }
-.range::-webkit-slider-runnable-track { height: 2px; background: var(--line); border-radius: 2px; }
-.range::-moz-range-track { height: 2px; background: var(--line); border-radius: 2px; }
-.range::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -9px; border-radius: 50%; background: var(--accent); border: 3px solid var(--paper); box-shadow: 0 0 0 1px var(--accent); }
-.range::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 3px solid var(--paper); box-shadow: 0 0 0 1px var(--accent); }
 
+/* ---------- Gallery: the dark room ---------- */
+.room { padding-bottom: var(--section); scroll-margin-top: 0; }
+.room-intro {
+  display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 40px;
+  padding-top: 18px; border-top: 1px solid var(--room-line);
+  margin-bottom: clamp(20px, 2.4vw, 32px);
+}
+.room-intro h2 { font-size: 15px; font-weight: 500; letter-spacing: -0.01em; line-height: inherit; }
+.room-intro p { color: var(--room-muted); font-size: 15px; justify-self: end; text-align: right; }
+
+/* Cards stack: each one pins, the next slides over it. */
+.stack { display: grid; gap: clamp(64px, 14vh, 160px); }
+.card {
+  position: sticky; top: calc(var(--i) * 14px + clamp(12px, 3vh, 28px));
+  background: var(--field); color: var(--card-ink);
+  border-radius: var(--radius);
+  padding: clamp(16px, 2.2vw, 28px);
+  box-shadow: 0 -1px 0 rgba(255,255,255,.06) inset, 0 -30px 60px -30px rgba(0,0,0,.6);
+}
+.card.scoop  { --i: 0; --field: #E6ECFA; --card-ink: #101215; --card-muted: #4E5664; }
+.card.carbon { --i: 1; --field: #11301B; --card-ink: #EEF3EF; --card-muted: #9DB3A4; }
+.card.store  { --i: 2; --field: #DCE1E8; --card-ink: #101215; --card-muted: #555D69; }
+
+.card-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px 32px; flex-wrap: wrap;
+  padding: clamp(4px, .8vw, 10px) clamp(4px, .8vw, 12px) clamp(16px, 2vw, 26px);
+}
+.card-title { font-size: clamp(34px, 4.6vw, 64px); font-weight: 300; line-height: 1; letter-spacing: -0.05em; }
+.card-meta { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; font-size: 15px; }
+.card-meta p { color: var(--card-muted); }
+.card-meta .what { color: var(--card-ink); max-width: 34ch; }
+.visit {
+  font-weight: 500; text-decoration: underline; text-underline-offset: 5px;
+  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+  transition: text-decoration-color .2s;
+}
+.visit:hover { text-decoration-color: currentColor; }
+.visit span { display: inline-block; transition: transform .25s var(--ease); }
+.visit:hover span { transform: translate(2px, -2px); }
+
+/* The stage keeps one proportion, sized so a card always fits the screen. */
 .stage {
-  height: clamp(460px, 56vw, 700px);
-  padding: clamp(14px, 3vw, 40px) clamp(14px, 3vw, 40px) 0;
-  display: flex; justify-content: center; align-items: flex-start;
-  background: var(--line); border-radius: 20px; overflow: hidden;
+  position: relative; display: block;
+  width: min(100%, calc((100svh - 230px) * 1.6)); margin-inline: auto;
+  aspect-ratio: 16 / 10;
+  border-radius: calc(var(--radius) - 8px);
+  background: color-mix(in srgb, var(--card-ink) 5%, transparent);
+  overflow: hidden; isolation: isolate;
 }
-.browser {
-  container: site / inline-size;
-  width: 100%; height: 100%;
-  background: #ECEFEA; color: #1E2A24;
-  border-radius: 12px 12px 0 0; overflow: hidden;
-  box-shadow: 0 30px 60px -30px rgba(16, 18, 21, .35);
-  display: flex; flex-direction: column;
+.shot { position: absolute; margin: 0; }
+.shot img { width: 100%; }
+.desk {
+  background: #fff; border-radius: 10px; overflow: hidden;
+  box-shadow: 0 1px 2px rgba(16,18,21,.08), 0 40px 80px -36px rgba(0,0,0,.55);
 }
-.browser-top { display: flex; align-items: center; gap: 14px; padding: 12px 14px; background: #FFFFFF; border-bottom: 1px solid #E2E4E9; flex: none; }
-.dots { display: flex; gap: 6px; }
-.dots i { width: 9px; height: 9px; border-radius: 50%; background: #D5D8DE; }
-.url { flex: 1; max-width: 340px; margin-inline: auto; padding: 4px 12px; border-radius: 8px; background: #F2F3F6; color: #6B7078; font-size: 12px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.site { flex: 1; min-height: 0; overflow: hidden; }
-
-/* Concept site inside the demo (reflows by container width) */
-.s-nav { display: flex; align-items: center; justify-content: space-between; padding: 2.4cqi 4cqi; font-size: clamp(11px, 1.3cqi, 15px); }
-.s-logo { font-weight: 600; font-size: clamp(16px, 2.2cqi, 24px); letter-spacing: -0.03em; }
-.s-links { display: flex; gap: 3cqi; }
-.s-burger { display: none; flex-direction: column; gap: 5px; width: 22px; }
-.s-burger i { height: 2px; background: currentColor; border-radius: 2px; }
-.s-hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 4cqi; align-items: center; padding: 3cqi 4cqi 4cqi; }
-.s-copy h4 { margin: 0 0 2cqi; font-size: clamp(26px, 5.4cqi, 66px); line-height: 1; font-weight: 400; letter-spacing: -0.045em; }
-.s-copy p { margin: 0 0 3cqi; font-size: clamp(12px, 1.5cqi, 18px); line-height: 1.5; opacity: .75; max-width: 34ch; }
-.s-btn { display: inline-block; padding: 1.1cqi 2.2cqi; border-radius: 999px; background: #1E2A24; color: #ECEFEA; font-size: clamp(11px, 1.3cqi, 15px); font-weight: 500; }
-.s-art { position: relative; aspect-ratio: 5 / 4; border-radius: 1.6cqi; background: #D5DDCF; overflow: hidden; }
-.s-sun { position: absolute; width: 20%; aspect-ratio: 1; right: 12%; top: 12%; border-radius: 50%; background: #D8B98A; }
-.s-bowl { position: absolute; left: 16%; right: 16%; top: 42%; bottom: 14%; background: #2F4A3C; border-radius: 0 0 50% 50% / 0 0 100% 100%; }
-.s-bowl::before { content: ""; position: absolute; left: 0; right: 0; top: -14%; height: 28%; border-radius: 50%; background: #1E2A24; }
-.s-bowl::after { content: ""; position: absolute; left: 6%; right: 6%; top: -9%; height: 18%; border-radius: 50%; background: #48705B; }
-.s-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2cqi; padding: 0 4cqi 4cqi; }
-.s-tile b { display: block; margin-top: 1.2cqi; font-size: clamp(12px, 1.6cqi, 18px); font-weight: 500; }
-.s-tile small { font-size: clamp(10px, 1.2cqi, 14px); opacity: .65; }
-.s-swatch { position: relative; aspect-ratio: 16 / 9; border-radius: 1.2cqi; overflow: hidden; }
-.s-swatch::after { content: ""; position: absolute; }
-.s-swatch.a { background: #C9D3C4; }
-.s-swatch.a::after { inset: 34% 36% 18%; background: #2F4A3C; border-radius: 0 0 50% 50% / 0 0 100% 100%; }
-.s-swatch.b { background: #E4E8DF; }
-.s-swatch.b::after { inset: 22% 40% 18%; background: #D8B98A; border-radius: 6px 6px 16px 16px; }
-.s-swatch.c { background: #D5DDCF; }
-.s-swatch.c::after { inset: 14% 34%; background: #1E2A24; border-radius: 50%; }
-
-@container site (max-width: 700px) {
-  .s-hero { grid-template-columns: 1fr; gap: 3.5cqi; }
-  .s-art { aspect-ratio: 16 / 9; }
-  .s-copy h4 { font-size: clamp(26px, 8cqi, 50px); }
+.desk .bar {
+  display: flex; align-items: center; height: clamp(20px, 2.2vw, 30px); padding-inline: 14px;
+  background: #fff; border-bottom: 1px solid #E8EAEE;
+  color: #7A808A; font-size: clamp(10px, .85vw, 12px);
 }
-@container site (max-width: 480px) {
-  .s-links { display: none; }
-  .s-burger { display: flex; }
-  .s-nav { padding: 14px 16px; }
-  .s-hero { padding: 6px 16px 18px; }
-  .s-copy p { font-size: 13px; }
-  .s-btn { padding: 10px 16px; font-size: 13px; }
-  .s-grid { grid-template-columns: 1fr 1fr; padding: 0 16px 16px; gap: 10px; }
-  .s-tile b { font-size: 13px; }
+.phone {
+  padding: clamp(3px, .5vw, 7px);
+  background: #0F1114; border-radius: 15% / 7.4%;
+  box-shadow: 0 1px 1px rgba(255,255,255,.1) inset, 0 50px 80px -40px rgba(0,0,0,.65);
 }
+.phone img { border-radius: 12.6% / 6.2%; }
 
-.caption { margin-top: 14px; font-size: 14px; color: var(--muted); }
+.scoop .desk  { left: 5.5%; top: 8%; width: 72%; }
+.scoop .phone { right: 7%; top: 19%; width: 20.5%; }
+.carbon .desk  { right: 5.5%; top: 9%; width: 72%; }
+.carbon .phone { left: 7%; top: 22%; width: 20.5%; }
+.store .phone { width: 21.5%; }
+.store .p1 { left: 15%; top: 14%; }
+.store .p2 { left: 39.25%; top: 6%; }
+.store .p3 { left: 63.5%; top: 19%; }
 
-/* Sections */
-.section { padding-block: var(--section); scroll-margin-top: 24px; }
+.desk, .phone { transition: translate .7s var(--ease); }
+a.stage:hover .desk { translate: 0 -6px; }
+a.stage:hover .phone { translate: 0 -14px; }
+
+/* Up close: two details, set asymmetrically. */
+.closeup {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: clamp(20px, 3vw, 40px);
+  margin-top: clamp(80px, 10vw, 152px); align-items: end;
+}
+.closeup figure:first-child { grid-column: 1 / span 5; }
+.closeup figure:last-child { grid-column: 7 / -1; margin-bottom: clamp(40px, 8vw, 120px); }
+.closeup .img { border-radius: calc(var(--radius) * .7); overflow: hidden; }
+.closeup .img.light { background: #fff; }
+.closeup figcaption { margin-top: 14px; font-size: 14px; color: var(--room-muted); }
+.closeup figcaption b { color: var(--room-ink); font-weight: 500; }
+
+/* ---------- How we work ---------- */
+.section { padding-top: var(--section); scroll-margin-top: 8px; }
+.how-head { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px 40px; align-items: end; }
+.how-head .lede { justify-self: end; }
+.steps {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(20px, 2.6vw, 36px);
+  margin: clamp(48px, 6vw, 88px) 0 0; padding: 0; list-style: none; counter-reset: s;
+}
+.step { display: grid; gap: 10px; align-content: start; padding-top: 20px; border-top: 1px solid var(--ink); counter-increment: s; }
+.step::before {
+  content: counter(s); font-size: clamp(44px, 4.4vw, 64px); font-weight: 300; line-height: 1;
+  letter-spacing: -0.05em; color: var(--muted); margin-bottom: clamp(16px, 2.4vw, 36px);
+}
+.step b { font-weight: 400; font-size: 21px; letter-spacing: -0.025em; line-height: 1.25; }
+.step p { color: var(--muted); font-size: 15px; max-width: 30ch; }
+
+/* ---------- Services ---------- */
 .split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
 .split > .intro { position: sticky; top: 32px; display: grid; gap: 20px; }
-.row { display: grid; gap: 10px; padding-block: 32px; border-top: 1px solid var(--line); }
-.row:last-child { border-bottom: 1px solid var(--line); }
-.row p { color: var(--muted); max-width: 50ch; }
+.row { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 8px 32px; padding-block: 28px; border-top: 1px solid var(--line); }
+.rows > .row:last-child { border-bottom: 1px solid var(--line); }
+.row p { color: var(--muted); max-width: 46ch; }
+.promise { margin-top: 28px; font-size: 15px; color: var(--muted); max-width: 52ch; }
+.promise b { color: var(--ink); font-weight: 500; }
 
-.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(24px, 4vw, 64px); margin-top: clamp(40px, 6vw, 72px); padding: 0; list-style: none; }
-.step { display: grid; gap: 12px; align-content: start; padding-top: 24px; border-top: 1px solid var(--ink); }
-.step .n { font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.step p { color: var(--muted); max-width: 34ch; }
-
-.contact {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 24px;
-  padding: clamp(32px, 6vw, 96px);
-  display: grid; gap: clamp(28px, 4vw, 48px);
+/* ---------- Contact: one clear intake ---------- */
+.contact { margin-top: var(--section); background: var(--ink); color: var(--paper); scroll-margin-top: 0; }
+.contact .wrap { padding-block: clamp(88px, 11vw, 160px) clamp(40px, 5vw, 64px); }
+.contact-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: clamp(40px, 6vw, 96px); align-items: start; }
+.contact h2 { font-size: clamp(42px, 6.6vw, 100px); line-height: 1; letter-spacing: -0.05em; }
+.contact .lede { color: color-mix(in srgb, var(--paper) 64%, transparent); margin-top: 24px; }
+.intake { display: grid; gap: 18px; }
+.field { display: grid; gap: 8px; }
+.field label { font-size: 14px; color: color-mix(in srgb, var(--paper) 72%, transparent); }
+.field label small { font-size: inherit; color: color-mix(in srgb, var(--paper) 45%, transparent); }
+.field input, .field textarea {
+  width: 100%; padding: 14px 16px; border-radius: 12px;
+  background: color-mix(in srgb, var(--paper) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--paper) 16%, transparent);
+  color: var(--paper); font-size: 16px; line-height: 1.4;
+  transition: border-color .2s, background .2s;
 }
-.contact h2 { font-size: clamp(38px, 6.4vw, 92px); max-width: 11em; }
-.contact .actions { gap: 28px; }
-.email { font-size: clamp(18px, 2vw, 24px); letter-spacing: -0.02em; text-decoration: underline; text-underline-offset: 6px; text-decoration-color: var(--line); transition: text-decoration-color .2s; }
-.email:hover { text-decoration-color: var(--accent); }
+.field textarea { min-height: 120px; resize: vertical; }
+.field input::placeholder, .field textarea::placeholder { color: color-mix(in srgb, var(--paper) 38%, transparent); }
+.field input:focus, .field textarea:focus { outline: none; border-color: var(--accent); background: color-mix(in srgb, var(--paper) 9%, transparent); }
+.intake .btn { justify-self: start; background: var(--paper); color: var(--ink); margin-top: 6px; }
+.intake .btn:hover { background: var(--accent); color: var(--accent-ink); }
+.fine { font-size: 14px; color: color-mix(in srgb, var(--paper) 55%, transparent); max-width: 46ch; }
+.fine a { color: var(--paper); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: color-mix(in srgb, var(--paper) 30%, transparent); }
+.fine a:hover { text-decoration-color: var(--accent); }
+.footer {
+  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  margin-top: clamp(64px, 9vw, 136px); padding-top: 24px;
+  border-top: 1px solid color-mix(in srgb, var(--paper) 16%, transparent);
+  font-size: 14px; color: color-mix(in srgb, var(--paper) 60%, transparent);
+}
+.footer a { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: color-mix(in srgb, var(--paper) 25%, transparent); }
+.footer a:hover { color: var(--paper); text-decoration-color: var(--accent); }
 
-.footer { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-block: 28px 40px; font-size: 14px; color: var(--muted); }
-.footer a { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--line); }
-.footer a:hover { color: var(--ink); text-decoration-color: var(--accent); }
+/* Scroll-linked depth: phones travel a little faster than desktop shots. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .stage .phone { animation: drift linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
+    @keyframes drift { from { transform: translateY(8%); } to { transform: translateY(-8%); } }
+  }
+}
 
-@media (max-width: 860px) {
-  .split { grid-template-columns: 1fr; }
+@media (max-width: 900px) {
+  .split, .row, .how-head, .contact-grid { grid-template-columns: 1fr; }
+  .room-intro p, .how-head .lede { justify-self: start; text-align: left; }
   .split > .intro { position: static; }
-  .steps { grid-template-columns: 1fr; }
   .hero-row { flex-direction: column; align-items: flex-start; }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
+  .closeup figure:first-child, .closeup figure:last-child { grid-column: 1 / -1; margin-bottom: 0; }
+}
+/* Phone-sized stages are recomposed rather than shrunk. */
+@media (max-width: 700px) {
+  .stage { aspect-ratio: 4 / 5; width: min(100%, calc((100svh - 250px) * .8)); }
+  .scoop .desk  { left: 6%; top: 7%; width: 88%; }
+  .scoop .phone { left: 7%; right: auto; top: auto; bottom: 5%; width: 38%; }
+  .carbon .desk  { right: 6%; top: 7%; width: 88%; }
+  .carbon .phone { left: auto; right: 7%; top: auto; bottom: 5%; width: 38%; }
+  .store .phone { width: 42%; }
+  .store .p1 { left: 5.5%; top: 14%; }
+  .store .p2 { left: 52.5%; top: 6%; }
+  .store .p3 { display: none; }
+  .desk { border-radius: 8px; }
+  .card-meta .what { display: none; }
+  .steps { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  h1 .l, h1 .l > span { display: inline; }
+  h1 .l > span { animation-name: fade; }
 }
 @media (max-width: 640px) {
-  .nav-links a:not(.btn) { display: none; }
-  .stage { border-radius: 14px; }
-  .presets { margin-left: 0; }
+  .nav-links a:not(.btn):not(.keep) { display: none; }
+  .nav-links { gap: 20px; }
 }
+@media (max-width: 400px) { .nav-links .keep { display: none; } }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition: none !important; }
@@ -245,192 +346,214 @@ h3 { font-size: clamp(21px, 2vw, 26px); font-weight: 400; line-height: 1.2; lett
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
+<div class="opening">
 <div class="wrap">
   <header class="nav">
     <a class="brand" href="/" aria-label="Article6 Studio, home">Article6<span>Studio</span></a>
     <nav class="nav-links" aria-label="Main">
-      <a href="#services">Services</a>
-      <a href="#process">Process</a>
+      <a class="keep" href="#work">Work</a>
+      <a href="#how">How we work</a>
       <a class="btn sm" href="#contact">Start a project</a>
     </nav>
   </header>
 </div>
+</div>
 
 <main id="main">
-  <section class="hero wrap" aria-labelledby="hero-title">
-    <h1 id="hero-title">Websites, designed and built properly.</h1>
+  <section class="hero opening" aria-labelledby="hero-title">
+   <div class="wrap">
+    <h1 id="hero-title"><span class="l"><span>Websites that do your</span></span> <span class="l"><span>business justice.</span></span></h1>
     <div class="hero-row">
-      <p class="lede">Article6 Studio designs and develops clear, fast websites for businesses that want a stronger presence online.</p>
+      <p class="lede">Tell us about your business once. We design, build and launch a site you will be proud to send people to, and you never have to chase us.</p>
       <div class="actions">
         <a class="btn" href="#contact">Start a project</a>
-        <a class="textlink" href="#services">See what we do</a>
+        <a class="textlink" href="#work">See the work</a>
       </div>
     </div>
+   </div>
+  </section>
 
-    <figure class="demo" aria-labelledby="demo-caption">
-      <div class="demo-bar" id="demo-bar">
-        <label for="w">Preview width</label>
-        <input class="range" id="w" type="range" min="320" max="1120" value="1120" step="1">
-        <output id="wo" for="w">1120 px</output>
-        <div class="presets" role="group" aria-label="Preview sizes">
-          <button type="button" data-w="375">Phone</button>
-          <button type="button" data-w="768">Tablet</button>
-          <button type="button" data-w="max">Desktop</button>
-        </div>
+  <section class="room opening" id="work" aria-labelledby="work-title">
+    <div class="wrap">
+      <div class="room-intro">
+        <h2 id="work-title">Selected work</h2>
+        <p>Real screens from products we designed, built and run ourselves.</p>
       </div>
-      <div class="stage" id="stage">
-        <div class="browser" id="browser">
-          <div class="browser-top" aria-hidden="true">
-            <span class="dots"><i></i><i></i><i></i></span>
-            <span class="url">rowe-ceramics.example</span>
-          </div>
-          <div class="site" aria-hidden="true">
-            <div class="s-nav">
-              <span class="s-logo">Rowe</span>
-              <span class="s-links"><span>Shop</span><span>Studio</span><span>Journal</span></span>
-              <span class="s-burger"><i></i><i></i></span>
-            </div>
-            <div class="s-hero">
-              <div class="s-copy">
-                <h4>Tableware made in small batches.</h4>
-                <p>Thrown, glazed and fired by hand in one studio.</p>
-                <span class="s-btn">Shop the collection</span>
-              </div>
-              <div class="s-art"><span class="s-sun"></span><span class="s-bowl"></span></div>
-            </div>
-            <div class="s-grid">
-              <div class="s-tile"><div class="s-swatch a"></div><b>Stone bowl</b><small>Matte glaze</small></div>
-              <div class="s-tile"><div class="s-swatch b"></div><b>Everyday mug</b><small>Sand glaze</small></div>
-              <div class="s-tile"><div class="s-swatch c"></div><b>Dinner plate</b><small>Black glaze</small></div>
+
+      <div class="stack">
+        <article class="card scoop" aria-labelledby="p-scoop">
+          <div class="card-head">
+            <h3 class="card-title" id="p-scoop">Scoop</h3>
+            <div class="card-meta">
+              <p>Product website with a live demo</p>
+              <p class="what">Point at anything in a video and find where to buy it.</p>
+              <a class="visit" href="https://scoop.article6.org/" target="_blank" rel="noopener">scoop.article6.org <span aria-hidden="true">&#8599;</span></a>
             </div>
           </div>
-        </div>
+          <a class="stage scoop" href="https://scoop.article6.org/" target="_blank" rel="noopener" aria-label="Visit the Scoop website (opens in a new tab)">
+            <figure class="shot desk">
+              <div class="bar" aria-hidden="true">scoop.article6.org</div>
+              <img src="/work/scoop-desktop-1200.webp" srcset="/work/scoop-desktop-1200.webp 1200w, /work/scoop-desktop-2000.webp 2000w" sizes="(max-width: 700px) 86vw, 900px" width="1200" height="804" alt="Scoop homepage on desktop: a woman in a denim jacket on a TV screen, with the jacket outlined and a panel listing exact, likely and similar matches." fetchpriority="high">
+            </figure>
+            <figure class="shot phone">
+              <img src="/work/scoop-mobile-400.webp" srcset="/work/scoop-mobile-400.webp 400w, /work/scoop-mobile-720.webp 720w" sizes="(max-width: 700px) 36vw, 260px" width="400" height="828" alt="Scoop homepage on a phone, showing the same demo with matching trousers." loading="lazy" decoding="async">
+            </figure>
+          </a>
+        </article>
+
+        <article class="card carbon" aria-labelledby="p-carbon">
+          <div class="card-head">
+            <h3 class="card-title" id="p-carbon">Article6 Carbon</h3>
+            <div class="card-meta">
+              <p>Service website</p>
+              <p class="what">Independent evidence review for carbon projects, before validation.</p>
+              <a class="visit" href="https://carbon.article6.org/" target="_blank" rel="noopener">carbon.article6.org <span aria-hidden="true">&#8599;</span></a>
+            </div>
+          </div>
+          <a class="stage carbon" href="https://carbon.article6.org/" target="_blank" rel="noopener" aria-label="Visit the Article6 Carbon website (opens in a new tab)">
+            <figure class="shot desk">
+              <div class="bar" aria-hidden="true">carbon.article6.org</div>
+              <img src="/work/carbon-desktop-1200.webp" srcset="/work/carbon-desktop-1200.webp 1200w, /work/carbon-desktop-2000.webp 2000w" sizes="(max-width: 700px) 86vw, 900px" width="1200" height="735" alt="Article6 Carbon homepage: the headline “Find the evidence gaps before your validator does.” beside a dark green assessment card." loading="lazy" decoding="async">
+            </figure>
+            <figure class="shot phone">
+              <img src="/work/carbon-mobile-400.webp" srcset="/work/carbon-mobile-400.webp 400w, /work/carbon-mobile-720.webp 720w" sizes="(max-width: 700px) 36vw, 260px" width="400" height="828" alt="Article6 Carbon homepage on a phone." loading="lazy" decoding="async">
+            </figure>
+          </a>
+        </article>
+
+        <article class="card store" aria-labelledby="p-store">
+          <div class="card-head">
+            <h3 class="card-title" id="p-store">School Ledger</h3>
+            <div class="card-meta">
+              <p>Web app for phones</p>
+              <p class="what">Stock, sales and money for school shops, made to be used one-handed.</p>
+              <p>Private app, shown from a demo account</p>
+            </div>
+          </div>
+          <div class="stage store" role="group" aria-label="School Ledger screens">
+            <figure class="shot phone p1">
+              <img src="/work/store-home-400.webp" srcset="/work/store-home-400.webp 400w, /work/store-home-720.webp 720w" sizes="(max-width: 700px) 40vw, 280px" width="400" height="828" alt="School Ledger home screen: today’s sales, money received and amount still owed, above large buttons for Sell Item, Add Stock and Stock." loading="lazy" decoding="async">
+            </figure>
+            <figure class="shot phone p2">
+              <img src="/work/store-sell-400.webp" srcset="/work/store-sell-400.webp 400w, /work/store-sell-720.webp 720w" sizes="(max-width: 700px) 40vw, 280px" width="400" height="828" alt="School Ledger “Record a sale” screen with a barcode scan button, item search, quantity and student name." loading="lazy" decoding="async">
+            </figure>
+            <figure class="shot phone p3">
+              <img src="/work/store-stock-400.webp" srcset="/work/store-stock-400.webp 400w, /work/store-stock-720.webp 720w" sizes="280px" width="400" height="828" alt="School Ledger stock screen listing a school uniform with eight in stock." loading="lazy" decoding="async">
+            </figure>
+          </div>
+        </article>
       </div>
-      <figcaption class="caption" id="demo-caption">A concept site, not a client project. Drag the slider to see the layout adapt to any screen.</figcaption>
-    </figure>
+
+      <div class="closeup">
+        <figure>
+          <div class="img"><img src="/work/scoop-statement-800.webp" srcset="/work/scoop-statement-800.webp 800w, /work/scoop-statement-1200.webp 1200w" sizes="(max-width: 900px) 90vw, 520px" width="800" height="416" alt="A bold blue section of the Scoop site: “Don’t screenshot it. Don’t hunt through comments.” struck through, followed by “Scoop it.”" loading="lazy" decoding="async"></div>
+          <figcaption><b>Scoop.</b> One idea, set big enough to remember.</figcaption>
+        </figure>
+        <figure>
+          <div class="img light">
+            <picture>
+              <source media="(max-width: 700px)" srcset="/work/carbon-path-700.webp 700w, /work/carbon-path-1000.webp 1000w" sizes="90vw" width="700" height="622">
+              <img src="/work/carbon-map-1000.webp" srcset="/work/carbon-map-1000.webp 1000w, /work/carbon-map-1600.webp 1600w" sizes="(max-width: 900px) 90vw, 640px" width="1000" height="429" alt="The evidence map from the Carbon site: a five-step review path next to a sample requirement marked medium risk." loading="lazy" decoding="async">
+            </picture>
+          </div>
+          <figcaption><b>Article6 Carbon.</b> A technical service, explained so anyone can follow it.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap" id="how" aria-labelledby="how-title">
+    <div class="how-head">
+      <h2 id="how-title">You tell us once. We take it from there.</h2>
+      <p class="lede">No long forms, no jargon, no chasing. One person who understands your business looks after it from first call to launch.</p>
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <b>Tell us about your business</b>
+        <p>One conversation about what you do, who your customers are and what the site needs to achieve.</p>
+      </li>
+      <li class="step">
+        <b>Get a clear plan</b>
+        <p>Scope, price and timeline in writing, in plain language, before any work starts.</p>
+      </li>
+      <li class="step">
+        <b>We design, build and check</b>
+        <p>You see the design early and can always ask where things stand. We test every page on phone and desktop.</p>
+      </li>
+      <li class="step">
+        <b>Launch, with a short handover</b>
+        <p>We launch the site and send one short note: what we did, what we checked and what we would do next.</p>
+      </li>
+    </ol>
   </section>
 
   <section class="section wrap" id="services" aria-labelledby="services-title">
     <div class="split">
       <div class="intro">
-        <h2 id="services-title">From first site to full rethink.</h2>
-        <p class="lede">Whether you are starting from nothing or fixing what you have, the work is the same: make it clear, make it fast, make it yours.</p>
+        <h2 id="services-title">What we can do for you.</h2>
+        <p class="lede">Whether you are starting from nothing or fixing what you have, the aim is the same: a site that makes a strong first impression and makes it easy to get in touch.</p>
       </div>
-      <div class="rows">
-        <div class="row">
-          <h3>Design and build</h3>
-          <p>A new website from first sketch to launch, built around how your business actually works.</p>
+      <div>
+        <div class="rows">
+          <div class="row">
+            <h3>A new website</h3>
+            <p>From first sketch to launch, built around how your business actually works.</p>
+          </div>
+          <div class="row">
+            <h3>A redesign</h3>
+            <p>Replace a site that lets you down with one that is clear, quick to load and easy to keep up to date. You see the before and after side by side.</p>
+          </div>
+          <div class="row">
+            <h3>Targeted fixes</h3>
+            <p>A slow page, a confusing menu or a weak mobile layout, fixed without starting over.</p>
+          </div>
         </div>
-        <div class="row">
-          <h3>Redesign</h3>
-          <p>Replace an outdated site with one that is clear, quick to load and easy to keep up to date.</p>
-        </div>
-        <div class="row">
-          <h3>Improvements</h3>
-          <p>Fix a slow page, a confusing menu or a weak mobile layout without starting over.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section wrap" id="process" aria-labelledby="process-title" style="padding-top:0">
-    <h2 id="process-title">How a project runs.</h2>
-    <ol class="steps">
-      <li class="step">
-        <span class="n">1</span>
-        <h3>Discuss</h3>
-        <p>We learn about your business, your customers and what the site needs to do.</p>
-      </li>
-      <li class="step">
-        <span class="n">2</span>
-        <h3>Agree</h3>
-        <p>Scope, deliverables, budget and timeline are written down before any building starts.</p>
-      </li>
-      <li class="step">
-        <span class="n">3</span>
-        <h3>Build and launch</h3>
-        <p>We build the site, test it on phone and desktop, then launch it.</p>
-      </li>
-    </ol>
-  </section>
-
-  <section class="wrap" id="contact" aria-labelledby="contact-title" style="padding-bottom:var(--section)">
-    <div class="contact">
-      <h2 id="contact-title">Tell us about your project.</h2>
-      <p class="lede">Have a website that needs work, or starting from zero? Send a few lines about it and we will talk through the options.</p>
-      <div class="actions">
-        <a class="btn" href="mailto:contact@article6.org?subject=Website%20project%20enquiry&body=Business%3A%0AExisting%20website%3A%0AWhat%20I%20need%3A%0ABudget%3A%0ATimeline%3A">Email us</a>
-        <a class="email" href="mailto:contact@article6.org">contact@article6.org</a>
+        <p class="promise"><b>What we will not do:</b> promise search rankings or overnight results. What we will do is give you a website you are proud to send people to.</p>
       </div>
     </div>
   </section>
 </main>
 
-<div class="wrap">
-  <footer class="footer">
-    <span>&copy; <span id="year">2026</span> Article6 Studio</span>
-    <a href="https://article6.org/">article6.org</a>
-  </footer>
-</div>
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <div class="wrap">
+    <div class="contact-grid">
+      <div>
+        <h2 id="contact-title">Tell us about your business.</h2>
+        <p class="lede">Three questions are all we need to start. We will come back with how we would approach it.</p>
+      </div>
+      <form class="intake" id="intake" action="mailto:contact@article6.org" method="post" enctype="text/plain">
+        <div class="field">
+          <label for="f-business">Your business</label>
+          <input id="f-business" name="business" autocomplete="organization" placeholder="Name, and what you do" required>
+        </div>
+        <div class="field">
+          <label for="f-site">Current website <small>(if you have one)</small></label>
+          <input id="f-site" name="website" inputmode="url" autocomplete="url" placeholder="yourbusiness.com">
+        </div>
+        <div class="field">
+          <label for="f-need">What would you like?</label>
+          <textarea id="f-need" name="need" placeholder="A new site, a redesign, a fix. Any timeline or budget helps." required></textarea>
+        </div>
+        <button class="btn" type="submit">Email us your answers</button>
+        <p class="fine">This opens your email app with your answers filled in. Nothing is sent until you press send there. Prefer to write yourself? <a href="mailto:contact@article6.org">contact@article6.org</a></p>
+      </form>
+    </div>
+    <footer class="footer">
+      <span>&copy; <span id="year">2026</span> Article6 Studio</span>
+      <a href="https://article6.org/">article6.org</a>
+    </footer>
+  </div>
+</section>
 
 <script>
-(function () {
-  document.getElementById('year').textContent = new Date().getFullYear();
-
-  var stage = document.getElementById('stage');
-  var browser = document.getElementById('browser');
-  var range = document.getElementById('w');
-  var out = document.getElementById('wo');
-  var bar = document.getElementById('demo-bar');
-  var MIN = 320;
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var raf = 0, touched = false;
-
-  function available() {
-    var cs = getComputedStyle(stage);
-    var w = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    return Math.max(MIN, Math.floor(w));
-  }
-  function set(w) {
-    w = Math.round(Math.min(Math.max(w, MIN), +range.max));
-    browser.style.width = w + 'px';
-    range.value = w;
-    out.textContent = w + ' px';
-  }
-  function limits() {
-    var max = available();
-    var atMax = +range.value >= +range.max;
-    range.max = max;
-    bar.style.display = max - MIN < 120 ? 'none' : '';
-    set(atMax ? max : Math.min(+range.value, max));
-  }
-  function stop() { touched = true; cancelAnimationFrame(raf); }
-
-  range.addEventListener('input', function () { stop(); set(+range.value); });
-  bar.addEventListener('click', function (e) {
-    var b = e.target.closest('button[data-w]');
-    if (!b) return;
-    stop();
-    set(b.dataset.w === 'max' ? +range.max : +b.dataset.w);
-  });
-  window.addEventListener('resize', limits);
-  limits();
-
-  // One-time intro: the frame widens from phone size to full width, then hands control to the visitor.
-  if (!reduce && +range.max >= 700) {
-    var from = 380, to = +range.max, dur = 2200, start = 0;
-    set(from);
-    var ease = function (t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
-    var tick = function (now) {
-      if (touched) return;
-      if (!start) start = now;
-      var t = Math.min((now - start) / dur, 1);
-      set(from + (to - from) * ease(t));
-      if (t < 1) raf = requestAnimationFrame(tick);
-    };
-    setTimeout(function () { if (!touched) raf = requestAnimationFrame(tick); }, 700);
-  }
-})();
+document.getElementById('year').textContent = new Date().getFullYear();
+document.getElementById('intake').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var f = e.target;
+  var business = f.business.value.trim(), site = f.website.value.trim(), need = f.need.value.trim();
+  var body = 'Business: ' + business + '\nCurrent website: ' + (site || 'None yet') + '\n\nWhat I would like:\n' + need + '\n';
+  location.href = 'mailto:contact@article6.org?subject=' + encodeURIComponent('Website enquiry: ' + business) + '&body=' + encodeURIComponent(body);
+});
 </script>
 </body>
 </html>
