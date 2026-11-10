@@ -273,16 +273,30 @@ a.stage:hover .phone { translate: 0 -14px; }
 .field { display: grid; gap: 8px; }
 .field label { font-size: 14px; color: color-mix(in srgb, var(--paper) 72%, transparent); }
 .field label small { font-size: inherit; color: color-mix(in srgb, var(--paper) 45%, transparent); }
-.field input, .field textarea {
+.field input, .field textarea, .field select {
   width: 100%; padding: 14px 16px; border-radius: 12px;
   background: color-mix(in srgb, var(--paper) 6%, transparent);
   border: 1px solid color-mix(in srgb, var(--paper) 16%, transparent);
   color: var(--paper); font-size: 16px; line-height: 1.4;
   transition: border-color .2s, background .2s;
 }
-.field textarea { min-height: 120px; resize: vertical; }
+.field textarea { min-height: 130px; resize: vertical; }
+.field select { appearance: none; cursor: pointer; }
+.field select option { color: #101215; background: #fff; }
+.intake .field label { font-size: 12px; text-transform: uppercase; letter-spacing: .09em; font-weight: 500; }
+.intake-row { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.intake .field input, .intake .field select, .intake .field textarea { min-height: 53px; }
+.intake .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+.intake .field select:invalid { color: color-mix(in srgb, var(--paper) 50%, transparent); }
+.intake-feedback { min-height: 24px; font-size: 14px; line-height: 1.5; }
+.intake-feedback[data-state="error"] { color: #ffb6b6; }
+.intake-feedback[data-state="success"] { color: #a6f3cb; }
+.intake-robot { position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden; }
+.intake .btn:disabled { opacity:.6;cursor:wait; }
+@media(max-width:640px){.intake-row{grid-template-columns:1fr;gap:18px;}}
+
 .field input::placeholder, .field textarea::placeholder { color: color-mix(in srgb, var(--paper) 38%, transparent); }
-.field input:focus, .field textarea:focus { outline: none; border-color: var(--accent); background: color-mix(in srgb, var(--paper) 9%, transparent); }
+.field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--accent); background: color-mix(in srgb, var(--paper) 9%, transparent); }
 .intake .btn { justify-self: start; background: var(--paper); color: var(--ink); margin-top: 6px; }
 .intake .btn:hover { background: var(--accent); color: var(--accent-ink); }
 .fine { font-size: 14px; color: color-mix(in srgb, var(--paper) 55%, transparent); max-width: 46ch; }
@@ -519,23 +533,67 @@ a.stage:hover .phone { translate: 0 -14px; }
     <div class="contact-grid">
       <div>
         <h2 id="contact-title">Tell us about your business.</h2>
-        <p class="lede">Three questions are all we need to start. We will come back with how we would approach it.</p>
+        <p class="lede">Tell us what you need. We’ll review it and get back to you with a clear next step.</p>
       </div>
-      <form class="intake" id="intake" action="mailto:contact@article6.org" method="post" enctype="text/plain">
-        <div class="field">
-          <label for="f-business">Your business</label>
-          <input id="f-business" name="business" autocomplete="organization" placeholder="Name, and what you do" required>
+      <form class="intake" id="intake" action="/api/contact" method="post">
+        <div class="intake-row">
+          <div class="field">
+            <label for="f-name">Your name *</label>
+            <input id="f-name" name="name" autocomplete="name" placeholder="Your name" required maxlength="120">
+          </div>
+          <div class="field">
+            <label for="f-email">Work email *</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required maxlength="254">
+          </div>
         </div>
         <div class="field">
-          <label for="f-site">Current website <small>(if you have one)</small></label>
-          <input id="f-site" name="website" inputmode="url" autocomplete="url" placeholder="yourbusiness.com">
+          <label for="f-business">Your business *</label>
+          <input id="f-business" name="company" autocomplete="organization" placeholder="Business or organisation name" required maxlength="180">
+        </div>
+        <div class="intake-row">
+          <div class="field">
+            <label for="f-site">Current website <small>(optional)</small></label>
+            <input id="f-site" name="website" inputmode="url" autocomplete="url" placeholder="yourbusiness.com" maxlength="400">
+          </div>
+          <div class="field">
+            <label for="f-service">What do you need? *</label>
+            <select id="f-service" name="service" required>
+              <option value="" disabled selected>Select a service</option>
+              <option value="NEW_WEBSITE">A new website</option>
+              <option value="REDESIGN">Redesign an existing website</option>
+              <option value="DEVELOPMENT">Website development or fixes</option>
+              <option value="SEO_GEO">SEO / AI search visibility</option>
+              <option value="OTHER">Not sure yet</option>
+            </select>
+          </div>
         </div>
         <div class="field">
-          <label for="f-need">What would you like?</label>
-          <textarea id="f-need" name="need" placeholder="A new site, a redesign, a fix. Any timeline or budget helps." required></textarea>
+          <label for="f-message">Tell us about your project *</label>
+          <textarea id="f-message" name="message" required maxlength="4000" placeholder="What are you trying to achieve? What's not working now?"></textarea>
         </div>
-        <button class="btn" type="submit">Email us your answers</button>
-        <p class="fine">This opens your email app with your answers filled in. Nothing is sent until you press send there. Prefer to write yourself? <a href="mailto:contact@article6.org">contact@article6.org</a></p>
+        <div class="intake-row">
+          <div class="field">
+            <label for="f-timeline">When do you need it? <small>(optional)</small></label>
+            <select id="f-timeline" name="timeline">
+              <option value="">Flexible / not sure</option>
+              <option value="ASAP">As soon as possible</option>
+              <option value="1_MONTH">Within a month</option>
+              <option value="1_3_MONTHS">In 1–3 months</option>
+              <option value="LATER">Later / planning</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-budget">Budget range <small>(optional)</small></label>
+            <input id="f-budget" name="budget" maxlength="90" placeholder="e.g. $1,000–$2,000 or flexible">
+          </div>
+        </div>
+        <div class="intake-robot" aria-hidden="true">
+          <label for="f-companyWebsite">Leave this blank</label>
+          <input id="f-companyWebsite" name="companyWebsite" autocomplete="off" tabindex="-1">
+        </div>
+        <button class="btn" id="intake-submit" type="submit">Send enquiry <span aria-hidden="true">↗</span></button>
+        <p class="intake-feedback" id="intake-feedback" role="status" aria-live="polite"></p>
+        <p class="fine">Your enquiry goes directly to our team. We’ll get back to you by email. Prefer email? <a href="mailto:contact@article6.org">contact@article6.org</a>.</p>
       </form>
     </div>
     <footer class="footer">
@@ -547,12 +605,42 @@ a.stage:hover .phone { translate: 0 -14px; }
 
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
-document.getElementById('intake').addEventListener('submit', function (e) {
-  e.preventDefault();
-  var f = e.target;
-  var business = f.business.value.trim(), site = f.website.value.trim(), need = f.need.value.trim();
-  var body = 'Business: ' + business + '\nCurrent website: ' + (site || 'None yet') + '\n\nWhat I would like:\n' + need + '\n';
-  location.href = 'mailto:contact@article6.org?subject=' + encodeURIComponent('Website enquiry: ' + business) + '&body=' + encodeURIComponent(body);
+document.getElementById('intake').addEventListener('submit', async function (event) {
+  event.preventDefault();
+  var form = event.currentTarget, button = document.getElementById('intake-submit');
+  var feedback = document.getElementById('intake-feedback');
+  if(button.disabled) return;
+  var data = Object.fromEntries(new FormData(form).entries());
+  feedback.textContent = ''; feedback.dataset.state = '';
+  if(data.website) {
+    try {
+      var parsed = new URL(/^https?:\/\//i.test(data.website) ? data.website : 'https://' + data.website);
+      if(parsed.protocol !== 'https:' || !parsed.hostname.includes('.')) throw new Error('invalid');
+      data.website = parsed.href;
+    } catch {
+      feedback.dataset.state = 'error';
+      feedback.textContent = 'Please enter a valid website address, or leave it blank.';
+      return;
+    }
+  }
+  button.disabled = true; button.textContent = 'Sending…';
+  try {
+    var response = await fetch('/api/contact', {
+      method:'POST', credentials:'same-origin',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify(data)
+    });
+    var result = await response.json().catch(function(){return {}});
+    if(!response.ok) throw new Error(result.error || 'We could not send your enquiry.');
+    form.reset();
+    feedback.dataset.state = 'success';
+    feedback.textContent = 'Enquiry received. We’ll get back to you by email.';
+  } catch(error) {
+    feedback.dataset.state = 'error';
+    feedback.textContent = error.message || 'Unable to submit. Please email contact@article6.org.';
+  } finally {
+    button.disabled = false; button.innerHTML = 'Send enquiry <span aria-hidden="true">↗</span>';
+  }
 });
 </script>
 </body>

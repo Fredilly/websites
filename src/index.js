@@ -108,41 +108,44 @@ export default {
       }
     }
     if (url.pathname === "/api/contact" && request.method === "POST") {
-      // Deliberately fails closed until the existing CRM integration is configured.
-      // Never acknowledge a lead without persisting or delivering it.
-      if (!env.CRM_INGEST_URL || !env.CRM_INGEST_TOKEN) {
-        return json({ error: "Online enquiries are not yet available. Please email contact@article6.org." }, 503);
-      }
-      const type = request.headers.get("content-type") || "";
-      if (!type.toLowerCase().startsWith("application/json")) return json({ error: "Expected JSON." }, 415);
-      const raw = await request.text();
-      if (raw.length > 8192) return json({ error: "Request too large." }, 413);
-      let body;
-      try { body = JSON.parse(raw); } catch { return json({ error: "Invalid JSON." }, 400); }
-      const { name, email, website, message, source } = body ?? {};
-      if (typeof name !== "string" || !name.trim() || name.length > 120 ||
-          typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 ||
-          typeof message !== "string" || !message.trim() || message.length > 4000) {
-        return json({ error: "Please enter your name, valid email and project details." }, 400);
-      }
-      const origin = request.headers.get("origin");
-      if (origin && origin !== url.origin) return json({ error: "Forbidden." }, 403);
-      const payload = {
-        name: name.trim(), email: email.trim(), website: typeof website === "string" ? website.slice(0, 400) : "",
-        message: message.trim(), source: typeof source === "string" ? source.slice(0, 80) : "websites",
-        receivedAt: new Date().toISOString()
+      if(!sameOrigin(request))return json({error:"Forbidden."},403);
+      if(!env.CRM_INGEST_URL||!env.CRM_INGEST_TOKEN)
+        return json({error:"Enquiries are temporarily unavailable. Email contact@article6.org."},503);
+      if(!(request.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))
+        return json({error:"Expected JSON."},415);
+      const raw=await request.text();
+      if(raw.length>7500)return json({error:"Request too large."},413);
+      let body;try{body=JSON.parse(raw)}catch{return json({error:"Invalid JSON."},400)}
+      if(!body||typeof body!=="object"||Array.isArray(body))return json({error:"Invalid submission."},400);
+      const field=(key,max)=>typeof body[key]==="string"?body[key].trim().slice(0,max):"";
+      const payload={
+        name:field("name",120),email:field("email",254),company:field("company",180),
+        website:field("website",400),service:field("service",32),message:field("message",4000),
+        timeline:field("timeline",90),budget:field("budget",90),
+        companyWebsite:field("companyWebsite",100)
       };
-      try {
-        const result = await fetch(env.CRM_INGEST_URL, {
-          method: "POST",
-          headers: { "content-type": "application/json", authorization: "Bearer " + env.CRM_INGEST_TOKEN },
-          body: JSON.stringify(payload),
-          signal: AbortSignal.timeout(8000)
+      if(payload.companyWebsite)return json({error:"Invalid submission."},400);
+      if(!payload.name||!payload.company||!payload.message||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email))
+        return json({error:"Please enter your name, business, email and project details."},400);
+      if(!["NEW_WEBSITE","REDESIGN","DEVELOPMENT","SEO_GEO","OTHER"].includes(payload.service))
+        return json({error:"Please select the type of project."},400);
+      if(payload.website&&!/^https:\/\/[^\s/]+/i.test(payload.website))
+        return json({error:"Please enter a valid website address."},400);
+      try{
+        const endpoint=new URL(env.CRM_INGEST_URL);
+        if(endpoint.protocol!=="https:"||endpoint.pathname!=="/api/partner/web-referral")
+          return json({error:"Enquiry service is not configured."},503);
+        endpoint.pathname="/api/partner/website-contact";
+        const upstream=await fetch(endpoint.toString(),{
+          method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+env.CRM_INGEST_TOKEN},
+          body:JSON.stringify(payload),signal:AbortSignal.timeout(12000)
         });
-        if (!result.ok) return json({ error: "Unable to submit your enquiry. Please email contact@article6.org." }, 502);
-        return json({ ok: true }, 201);
-      } catch {
-        return json({ error: "Unable to submit your enquiry. Please email contact@article6.org." }, 502);
+        if(upstream.status===409)return json({error:"This contact already exists. Please email contact@article6.org with your update."},409);
+        if(!upstream.ok)return json({error:"We couldn't save your enquiry. Please email contact@article6.org."},502);
+        return json({ok:true},201);
+      }catch{
+        return json({error:"We couldn't confirm your enquiry was saved. Please email contact@article6.org before trying again."},502);
       }
     }
     if (url.pathname.startsWith("/api/")) return json({ error: "Not found" }, 404);
