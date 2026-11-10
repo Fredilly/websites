@@ -126,11 +126,11 @@ export default {
       };
       if(payload.companyWebsite)return json({error:"Invalid submission."},400);
       if(!payload.name||!payload.company||!payload.message||
-        !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(payload.email))
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email))
         return json({error:"Please enter your name, business, email and project details."},400);
       if(!["NEW_WEBSITE","REDESIGN","DEVELOPMENT","SEO_GEO","OTHER"].includes(payload.service))
         return json({error:"Please select the type of project."},400);
-      if(payload.website&&!/^https:\\/\\/[^\\s/]+/i.test(payload.website))
+      if(payload.website&&!/^https:\/\/[^\s/]+/i.test(payload.website))
         return json({error:"Please enter a valid website address."},400);
       try{
         const endpoint=new URL(env.CRM_INGEST_URL);
