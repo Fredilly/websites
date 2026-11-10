@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Article6 Studio | Website design and development</title>
-<meta name="description" content="Article6 Studio designs, builds and launches websites that do your business justice. Tell us about your business once; we take it from there.">
+<meta name="description" content="Article6 Studio builds clear, credible websites for businesses. Explore working examples, see our process, and tell us what your next site needs.">
 <meta name="theme-color" content="#0B0C0E">
 <meta property="og:title" content="Article6 Studio | Website design and development">
-<meta property="og:description" content="Websites that do your business justice.">
+<meta property="og:description" content="Professional websites built to earn trust and make it easier for customers to contact you.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://websites.article6.org/">
 <meta property="og:image" content="https://websites.article6.org/work/og.jpg">
@@ -355,6 +355,58 @@ a.stage:hover .phone { translate: 0 -14px; }
   html { scroll-behavior: auto; }
   * { transition: none !important; }
 }
+
+/* Conversion-first editorial additions; preserve the existing visual system. */
+.hero-kicker,.section-label,.proof-label{
+  font-size:12px;font-weight:600;letter-spacing:.14em;line-height:1.5;
+  text-transform:uppercase;
+}
+.hero-kicker{color:#a7b1ff;margin:0 0 30px;}
+.hero .hero-intro{display:grid;gap:15px;max-width:560px;}
+.hero-reassurance{font-size:14px;color:var(--room-muted);line-height:1.5;}
+.hero-proof{display:flex;flex-wrap:wrap;gap:13px 32px;border-top:1px solid var(--room-line);margin-top:clamp(44px,6vw,76px);padding-top:19px;}
+.hero-proof span{font-size:12px;line-height:1.5;color:#b5bbc5;}
+.hero-proof span:before{content:"✓";display:inline-block;margin-right:9px;color:#b6c3ff;}
+.hero-row .actions{align-items:flex-start;}
+.hero-row .actions .btn{text-align:center;}
+.room-intro{align-items:flex-start;}
+.room-intro h2{font-size:clamp(19px,2.2vw,28px);line-height:1.25;letter-spacing:-.025em;font-weight:500;}
+.room-intro p{max-width:38ch;}
+.proof-note{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,7fr) minmax(0,3fr);gap:16px 28px;align-items:start;margin-top:clamp(40px,7vw,96px);padding-top:24px;border-top:1px solid var(--room-line);}
+.proof-note .proof-label{color:#a7b1ff;}
+.proof-note p:not(.proof-label){font-size:15px;line-height:1.7;color:var(--room-muted);max-width:68ch;}
+.proof-note a{font-size:14px;font-weight:500;line-height:1.6;text-decoration:underline;text-underline-offset:5px;text-decoration-color:#606777;}
+.service-link{display:inline-flex;gap:7px;margin-top:23px;font-size:15px;font-weight:500;text-decoration:underline;text-underline-offset:5px;text-decoration-color:var(--line);}
+.questions{padding-top:var(--section);padding-bottom:clamp(92px,11vw,168px);}
+.questions-heading{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:24px;align-items:end;}
+.questions-heading .section-label{color:var(--muted);}
+.questions-heading h2{max-width:14ch;}
+.question-list{margin-top:clamp(32px,5vw,72px);border-top:1px solid var(--line);max-width:100%;}
+.question-list details{border-bottom:1px solid var(--line);padding:0;}
+.question-list summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:18px;padding:25px 0;font-size:clamp(17px,1.8vw,22px);line-height:1.3;letter-spacing:-.025em;}
+.question-list summary::-webkit-details-marker{display:none;}
+.question-list summary:after{content:"+";font-size:26px;line-height:1;font-weight:300;flex:none;color:var(--muted);}
+.question-list details[open] summary:after{content:"−";}
+.question-list details p{max-width:70ch;padding:0 30px 25px 0;color:var(--muted);font-size:16px;line-height:1.75;}
+.questions-cta{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:30px;}
+.questions-cta p{font-size:16px;color:var(--muted);}
+.contact .section-label{color:color-mix(in srgb,var(--paper) 70%, transparent);margin-bottom:21px;}
+@media(max-width:900px){
+ .proof-note{grid-template-columns:1fr 2fr;}
+ .proof-note a{grid-column:2;}
+ .questions-heading{grid-template-columns:1fr;}
+}
+@media(max-width:640px){
+ .hero-kicker{margin-bottom:20px;font-size:11px;}
+ .hero-proof{display:grid;gap:11px;}
+ .hero-row .actions{align-items:stretch;width:100%;}
+ .hero-row .actions .btn{width:100%;white-space:normal;}
+ .proof-note{grid-template-columns:1fr;gap:12px;}
+ .proof-note a{grid-column:auto;}
+ .room-intro h2{font-size:22px;}
+ .question-list summary{padding:22px 0;font-size:18px;}
+ .question-list details p{padding-bottom:24px;font-size:15px;}
+}
 </style>
 </head>
 <body>
@@ -365,9 +417,9 @@ a.stage:hover .phone { translate: 0 -14px; }
   <header class="nav">
     <a class="brand" href="/" aria-label="Article6 Studio, home">Article6<span>Studio</span></a>
     <nav class="nav-links" aria-label="Main">
-      <a class="keep" href="#work">Work</a>
-      <a href="#how">How we work</a>
-      <a class="btn sm" href="#contact">Start a project</a>
+      <a class="keep" href="#work">Our work</a>
+      <a href="#how">How it works</a>
+      <a class="btn sm" href="#contact">Discuss a website</a>
     </nav>
   </header>
 </div>
@@ -376,13 +428,22 @@ a.stage:hover .phone { translate: 0 -14px; }
 <main id="main">
   <section class="hero opening" aria-labelledby="hero-title">
    <div class="wrap">
-    <h1 id="hero-title"><span class="l"><span>Websites that do your</span></span> <span class="l"><span>business justice.</span></span></h1>
+    <p class="hero-kicker">WEBSITE DESIGN &amp; DEVELOPMENT FOR BUSINESSES</p>
+    <h1 id="hero-title"><span class="l"><span>Your website should</span></span> <span class="l"><span>win people over.</span></span></h1>
     <div class="hero-row">
-      <p class="lede">Tell us about your business once. We design, build and launch a site you will be proud to send people to, and you never have to chase us.</p>
-      <div class="actions">
-        <a class="btn" href="#contact">Start a project</a>
-        <a class="textlink" href="#work">See the work</a>
+      <div class="hero-intro">
+        <p class="lede">A website should make your business look credible, explain what you do and make the next step obvious. We design and build exactly that.</p>
+        <p class="hero-reassurance">New websites. Thoughtful redesigns. The fixes that matter.</p>
       </div>
+      <div class="actions">
+        <a class="btn" href="#contact">Tell us about your project <span aria-hidden="true">↗</span></a>
+        <a class="textlink" href="#work">Explore real work</a>
+      </div>
+    </div>
+    <div class="hero-proof" aria-label="What to expect">
+      <span>Clear written scope before work begins</span>
+      <span>Designed for mobile and desktop</span>
+      <span>Live work you can explore</span>
     </div>
    </div>
   </section>
@@ -390,8 +451,8 @@ a.stage:hover .phone { translate: 0 -14px; }
   <section class="room opening" id="work" aria-labelledby="work-title">
     <div class="wrap">
       <div class="room-intro">
-        <h2 id="work-title">Selected work</h2>
-        <p>Real screens from products we designed, built and run ourselves.</p>
+        <h2 id="work-title">Not mockups. Real things we built.</h2>
+        <p>Independent products and websites from our own portfolio. Explore the live versions.</p>
       </div>
 
       <div class="stack">
@@ -399,7 +460,7 @@ a.stage:hover .phone { translate: 0 -14px; }
           <div class="card-head">
             <h3 class="card-title" id="p-scoop">Scoop</h3>
             <div class="card-meta">
-              <p>Product website with a live demo</p>
+              <p>In-house product · interactive shopping experience</p>
               <p class="what">Point at anything in a video and find where to buy it.</p>
               <a class="visit" href="https://scoop.article6.org/" target="_blank" rel="noopener">scoop.article6.org <span aria-hidden="true">&#8599;</span></a>
             </div>
@@ -419,7 +480,7 @@ a.stage:hover .phone { translate: 0 -14px; }
           <div class="card-head">
             <h3 class="card-title" id="p-carbon">Article6 Carbon</h3>
             <div class="card-meta">
-              <p>Service website</p>
+              <p>In-house service website · specialist carbon reviews</p>
               <p class="what">Independent evidence review for carbon projects, before validation.</p>
               <a class="visit" href="https://carbon.article6.org/" target="_blank" rel="noopener">carbon.article6.org <span aria-hidden="true">&#8599;</span></a>
             </div>
@@ -439,7 +500,7 @@ a.stage:hover .phone { translate: 0 -14px; }
           <div class="card-head">
             <h3 class="card-title" id="p-store">School Ledger</h3>
             <div class="card-meta">
-              <p>Web app for phones</p>
+              <p>In-house product · mobile-first web app</p>
               <p class="what">Stock, sales and money for school shops, made to be used one-handed.</p>
               <p>Private app, shown from a demo account</p>
             </div>
@@ -456,6 +517,11 @@ a.stage:hover .phone { translate: 0 -14px; }
             </figure>
           </div>
         </article>
+      </div>
+      <div class="proof-note">
+        <p class="proof-label">WHY THESE EXAMPLES?</p>
+        <p>These are products and services we've built for ourselves, not client testimonials. You can inspect the public sites and see the quality of the work firsthand. For a business website, we bring the same attention to clarity, navigation and detail.</p>
+        <a href="#contact">Have something similar in mind? Let's talk <span aria-hidden="true">↗</span></a>
       </div>
 
       <div class="closeup">
@@ -478,25 +544,25 @@ a.stage:hover .phone { translate: 0 -14px; }
 
   <section class="section wrap" id="how" aria-labelledby="how-title">
     <div class="how-head">
-      <h2 id="how-title">You tell us once. We take it from there.</h2>
-      <p class="lede">No long forms, no jargon, no chasing. One person who understands your business looks after it from first call to launch.</p>
+      <h2 id="how-title">No mystery. No endless back-and-forth.</h2>
+      <p class="lede">You should know what we're building, what it will cost and what happens next before you commit to a project.</p>
     </div>
     <ol class="steps">
       <li class="step">
         <b>Tell us about your business</b>
-        <p>One conversation about what you do, who your customers are and what the site needs to achieve.</p>
+        <p>Tell us who your customers are, what your site should achieve and what you already have. You can start with the short form below.</p>
       </li>
       <li class="step">
         <b>Get a clear plan</b>
-        <p>Scope, price and timeline in writing, in plain language, before any work starts.</p>
+        <p>We discuss the requirements, then put the deliverables, quote and proposed timeline in writing. No commitment just to enquire.</p>
       </li>
       <li class="step">
         <b>We design, build and check</b>
-        <p>You see the design early and can always ask where things stand. We test every page on phone and desktop.</p>
+        <p>We develop the agreed pages, share progress and review the mobile and desktop experience before launch.</p>
       </li>
       <li class="step">
         <b>Launch, with a short handover</b>
-        <p>We launch the site and send one short note: what we did, what we checked and what we would do next.</p>
+        <p>We hand over the agreed website and explain how to use it, what was checked and what to consider next.</p>
       </li>
     </ol>
   </section>
@@ -504,27 +570,42 @@ a.stage:hover .phone { translate: 0 -14px; }
   <section class="section wrap" id="services" aria-labelledby="services-title">
     <div class="split">
       <div class="intro">
-        <h2 id="services-title">What we can do for you.</h2>
-        <p class="lede">Whether you are starting from nothing or fixing what you have, the aim is the same: a site that makes a strong first impression and makes it easy to get in touch.</p>
+        <h2 id="services-title">The right website. Not the biggest project.</h2>
+        <p class="lede">You might need a complete website, a focused redesign or just a few things fixed. We'll recommend an approach that fits the problem.</p>
       </div>
       <div>
         <div class="rows">
           <div class="row">
             <h3>A new website</h3>
-            <p>From first sketch to launch, built around how your business actually works.</p>
+            <p>A clear homepage, useful service information, confident mobile design and an obvious way for customers to get in touch.</p>
           </div>
           <div class="row">
             <h3>A redesign</h3>
-            <p>Replace a site that lets you down with one that is clear, quick to load and easy to keep up to date. You see the before and after side by side.</p>
+            <p>Keep what works. Fix confusing pages, dated presentation and friction that stops visitors contacting you.</p>
           </div>
           <div class="row">
             <h3>Targeted fixes</h3>
-            <p>A slow page, a confusing menu or a weak mobile layout, fixed without starting over.</p>
+            <p>Improve a broken form, awkward mobile layout, slow page or other important issue without rebuilding everything.</p>
           </div>
         </div>
-        <p class="promise"><b>What we will not do:</b> promise search rankings or overnight results. What we will do is give you a website you are proud to send people to.</p>
+        <p class="promise"><b>Our approach:</b> scope first, quote second, build third. No invented guarantees about rankings, sales or timelines.</p>
+        <a class="service-link" href="#contact">Get a sensible recommendation for your website <span aria-hidden="true">↗</span></a>
       </div>
     </div>
+  </section>
+
+  <section class="questions wrap" id="questions" aria-labelledby="questions-title">
+    <div class="questions-heading">
+      <p class="section-label">BEFORE YOU GET IN TOUCH</p>
+      <h2 id="questions-title">A few sensible questions.</h2>
+    </div>
+    <div class="question-list">
+      <details><summary>How much will my website cost?</summary><p>It depends on the pages, features and work involved. Tell us what you need and we'll discuss a scope and quote before you commit to a build.</p></details>
+      <details><summary>How long does a project take?</summary><p>A simple website and a custom application are very different projects. We'll propose a timeline once the requirements are clear, rather than promise a date we can't justify.</p></details>
+      <details><summary>Do I need to know exactly what I want?</summary><p>No. Tell us about your business and what's missing from your current website, if you have one. We'll help narrow the options.</p></details>
+      <details><summary>What happens after I send the form?</summary><p>Your enquiry goes to our team. We'll review the details, follow up by email and discuss scope and next steps if the project is a good fit. Sending an enquiry is not a commitment.</p></details>
+    </div>
+    <div class="questions-cta"><p>Still not sure what you need?</p><a class="btn" href="#contact">Start with a conversation <span aria-hidden="true">↗</span></a></div>
   </section>
 </main>
 
@@ -532,8 +613,9 @@ a.stage:hover .phone { translate: 0 -14px; }
   <div class="wrap">
     <div class="contact-grid">
       <div>
-        <h2 id="contact-title">Tell us about your business.</h2>
-        <p class="lede">Tell us what you need. We’ll review it and get back to you with a clear next step.</p>
+        <p class="section-label">NO OBLIGATION TO ENQUIRE</p>
+        <h2 id="contact-title">Tell us what you need. We'll take it from there.</h2>
+        <p class="lede">A few details are enough to start. We'll review your project and reply by email to discuss the next step. No pressure to commit.</p>
       </div>
       <form class="intake" id="intake" action="/api/contact" method="post">
         <div class="intake-row">
@@ -593,7 +675,7 @@ a.stage:hover .phone { translate: 0 -14px; }
         </div>
         <button class="btn" id="intake-submit" type="submit">Send enquiry <span aria-hidden="true">↗</span></button>
         <p class="intake-feedback" id="intake-feedback" role="status" aria-live="polite"></p>
-        <p class="fine">Your enquiry goes directly to our team. We’ll get back to you by email. Prefer email? <a href="mailto:contact@article6.org">contact@article6.org</a>.</p>
+        <p class="fine">Your enquiry goes directly to our team, not a mailing list. No obligation to proceed. Prefer email? <a href="mailto:contact@article6.org">contact@article6.org</a>.</p>
       </form>
     </div>
     <footer class="footer">
